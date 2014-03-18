@@ -1,0 +1,277 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{62AF9599-8669-4F9B-8E9A-1A60E0F08F92}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Nieko.Infrastructure</RootNamespace>
+    <AssemblyName>Nieko.Infrastructure</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <PublishUrl>http://localhost/Nieko.Infrastructure/</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Web</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug Release Con|AnyCPU'">
+    <OutputPath>bin\Debug Release Con\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>false</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Release\Nieko.Infrastructure.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+    <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BindingHelper.cs" />
+    <Compile Include="Collections\BinarySearchExtensions.cs" />
+    <Compile Include="Collections\DescendedDateComparer.cs" />
+    <Compile Include="Collections\HashSetExtensions.cs" />
+    <Compile Include="Collections\ReadOnlyDictionary`.cs" />
+    <Compile Include="Collections\ReadOnlyDictionary``.cs" />
+    <Compile Include="ComponentModel\EndPointContextSerializerAttribute.cs" />
+    <Compile Include="ComponentModel\EndPointFactory.cs" />
+    <Compile Include="ComponentModel\EndPointInitialization.cs" />
+    <Compile Include="ComponentModel\EndPointProvider`.cs" />
+    <Compile Include="ComponentModel\EndPoint.cs" />
+    <Compile Include="ComponentModel\ExistingEndPointFactory.cs" />
+    <Compile Include="ComponentModel\IEditableMirrorObject.cs" />
+    <Compile Include="ComponentModel\IEndPointContextSerializer.cs" />
+    <Compile Include="ComponentModel\IEndPointFactory.cs" />
+    <Compile Include="ComponentModel\IEndPointProvider.cs" />
+    <Compile Include="ComponentModel\IEndPointValidation.cs" />
+    <Compile Include="ComponentModel\ITypeMapper.cs" />
+    <Compile Include="ComponentModel\ITypeMapperFromOnlyFactory.cs" />
+    <Compile Include="ComponentModel\ITypeMapperToOnlyFactory.cs" />
+    <Compile Include="ComponentModel\NoEndPointValidation.cs" />
+    <Compile Include="ComponentModel\NotEditableWrapper.cs" />
+    <Compile Include="ComponentModel\NotifyingFields.cs" />
+    <Compile Include="Collections\ObservableDictionary.cs" />
+    <Compile Include="ComponentModel\NotifyPropertyChangedBase.cs" />
+    <Compile Include="ComponentModel\TypeMapper``.cs" />
+    <Compile Include="ComponentModel\TypeMapper.cs" />
+    <Compile Include="ComponentModel\TypeMapperFromOnlyFactory.cs" />
+    <Compile Include="ComponentModel\TypeMapperToOnlyFactory.cs" />
+    <Compile Include="Composition\ContainerModule.cs" />
+    <Compile Include="Composition\IGenericSupplierBuilder.cs" />
+    <Compile Include="Composition\DependantModule.cs" />
+    <Compile Include="Composition\NiekoModuleNames.cs" />
+    <Compile Include="Composition\IContainerAdapter.cs" />
+    <Compile Include="Composition\IContainerModule.cs" />
+    <Compile Include="Composition\ISettings.cs" />
+    <Compile Include="Composition\ISettingsEntity.cs" />
+    <Compile Include="Composition\ISettingsProvider.cs" />
+    <Compile Include="Composition\SettingsBase.cs" />
+    <Compile Include="Data\CrossContextAttribute.cs" />
+    <Compile Include="Data\CrossContextLoader.cs" />
+    <Compile Include="Data\DatabaseGeneratedStore.cs" />
+    <Compile Include="Data\DataStoreMethodsFinder.cs" />
+    <Compile Include="Data\DataStoreRegistration`.cs" />
+    <Compile Include="Data\DataStoresManager.cs" />
+    <Compile Include="Data\DefaultPrimaryKeyExpressionProvider.cs" />
+    <Compile Include="Data\EntityFilterProvider.cs" />
+    <Compile Include="Data\FilterExpressionProviderAttribute.cs" />
+    <Compile Include="Data\GeneratedStoreMergeOptionUpdater.cs" />
+    <Compile Include="Data\IDataStore.cs" />
+    <Compile Include="Data\IDataStoreRegistration.cs" />
+    <Compile Include="Data\IDataStoresManager.cs" />
+    <Compile Include="Data\IModelViewStore.cs" />
+    <Compile Include="Data\IStoreConnectionStringProvider.cs" />
+    <Compile Include="Data\ModelViewStoreRegistration`.cs" />
+    <Compile Include="Data\ModelViewStoreRegistration``.cs" />
+    <Compile Include="Data\IPrimaryKeyFilterExpressionProvider.cs" />
+    <Compile Include="Data\IModelViewStoreManager.cs" />
+    <Compile Include="Data\IModelViewStoreRegistration.cs" />
+    <Compile Include="Data\InvalidKeysException.cs" />
+    <Compile Include="Data\IPrimaryKeyed.cs" />
+    <Compile Include="Data\IPrimaryKeyedToStringProvider.cs" />
+    <Compile Include="Data\IUnitOfWork.cs" />
+    <Compile Include="Data\PluginDataStoresManager.cs" />
+    <Compile Include="Data\PluginModelViewStoreManager.cs" />
+    <Compile Include="Data\PrimaryKey.cs" />
+    <Compile Include="Data\PrimaryKeyAttribute.cs" />
+    <Compile Include="Data\PrimaryKeyComparer.cs" />
+    <Compile Include="Data\PrimaryKeyedBase.cs" />
+    <Compile Include="Data\StoredTypeInfo.cs" />
+    <Compile Include="Data\SynchronizedDataStoresManager.cs" />
+    <Compile Include="Data\UnitOfWork.cs" />
+    <Compile Include="EventAggregation\IApplicationExitRequestEvent.cs" />
+    <Compile Include="EventAggregation\IApplicationInitializedEvent.cs" />
+    <Compile Include="EventAggregation\IInitializeSecurityEvent.cs" />
+    <Compile Include="EventAggregation\IModulesInitializedEvent.cs" />
+    <Compile Include="EventAggregation\IEventAggregatorFacade.cs" />
+    <Compile Include="EventAggregation\IInfrastructureEvent.cs" />
+    <Compile Include="EventAggregation\IInfrastructureEventAggregator.cs" />
+    <Compile Include="EventAggregation\IInitializePluginFrameworkEvent.cs" />
+    <Compile Include="EventAggregation\IPluginsLoadedEvent.cs" />
+    <Compile Include="EventAggregation\IPopupChangedEvent.cs" />
+    <Compile Include="EventAggregation\IInitialActionRequestEvent.cs" />
+    <Compile Include="EventAggregation\IStartupNoficationsRequestEvent.cs" />
+    <Compile Include="EventAggregation\StartupNotification.cs" />
+    <Compile Include="Export\CompositeExport.cs" />
+    <Compile Include="Export\CompositeExportItem.cs" />
+    <Compile Include="Export\DataExporter.cs" />
+    <Compile Include="Export\IDataExporter.cs" />
+    <Compile Include="Export\IExportRootOverridden.cs" />
+    <Compile Include="Export\SerializableProperty.cs" />
+    <Compile Include="Export\UseInstanceTypeAttribute.cs" />
+    <Compile Include="Export\XmlExporter.cs" />
+    <Compile Include="INotifyDisposable.cs" />
+    <Compile Include="Linq\Expressions\Extensions.cs" />
+    <Compile Include="Linq\TypeExtensions.cs" />
+    <Compile Include="Logging\ILogger.cs" />
+    <Compile Include="Logging\SeverityCategory.cs" />
+    <Compile Include="Logging\Logger.cs" />
+    <Compile Include="Navigation\ExitRequest.cs" />
+    <Compile Include="Navigation\IDialogs.cs" />
+    <Compile Include="Navigation\INavigateRequest.cs" />
+    <Compile Include="Navigation\INavigationAware.cs" />
+    <Compile Include="Navigation\IViewNavigator.cs" />
+    <Compile Include="Navigation\IStartupNotifier.cs" />
+    <Compile Include="Navigation\IWaitDialog.cs" />
+    <Compile Include="Navigation\Menus\IMenu.cs" />
+    <Compile Include="Navigation\Menus\IMenuNavigator.cs" />
+    <Compile Include="Navigation\Menus\Menu.cs" />
+    <Compile Include="Navigation\Menus\MenuCreationException.cs" />
+    <Compile Include="Navigation\Menus\MenuDefinition.cs" />
+    <Compile Include="Navigation\Menus\MenuState.cs" />
+    <Compile Include="Navigation\Menus\NavigationEventArgs.cs" />
+    <Compile Include="Navigation\NavigationEventArgs.cs" />
+    <Compile Include="Navigation\NavigationRequest.cs" />
+    <Compile Include="Reflection\EntityTypeExtensions.cs" />
+    <Compile Include="Reflection\IPlugInFactory.cs" />
+    <Compile Include="Reflection\IPluginFinder.cs" />
+    <Compile Include="Reflection\MethodInfoExtensions.cs" />
+    <Compile Include="Reflection\PluginDependancies.cs" />
+    <Compile Include="Reflection\PluginException.cs" />
+    <Compile Include="Reflection\PlugInFactory.cs" />
+    <Compile Include="Reflection\PluginFinder.cs" />
+    <Compile Include="Reflection\PluginIgnoreAttribute.cs" />
+    <Compile Include="Security\EntityMenuAccessManager.cs" />
+    <Compile Include="Security\EntitySecurityManager.cs" />
+    <Compile Include="Security\IMenuAccessManager.cs" />
+    <Compile Include="Security\IMenuEntity.cs" />
+    <Compile Include="Security\IMenuRoleEntity.cs" />
+    <Compile Include="Security\IRole.cs" />
+    <Compile Include="Security\IRolesProvider.cs" />
+    <Compile Include="Security\ISecurityManager.cs" />
+    <Compile Include="Security\RijndaelExtensions.cs" />
+    <Compile Include="Security\RoleContainerAttribute.cs" />
+    <Compile Include="Security\RoleExpression.cs" />
+    <Compile Include="Security\RolesProviderBase.cs" />
+    <Compile Include="Security\SystemRoles.cs" />
+    <Compile Include="Threading\PolledTask.cs" />
+    <Compile Include="Linq\ComparableExpression.cs" />
+    <Compile Include="Linq\Expressions\ExpressionInfo.cs" />
+    <Compile Include="Linq\Extensions.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reflection\AssemblyHelper.cs" />
+    <Compile Include="Reflection\TypeExtensions.cs" />
+    <Compile Include="Versioning\IComponentEntity.cs" />
+    <Compile Include="Versioning\IComponentsProvider.cs" />
+    <Compile Include="Versioning\IDataUpdateManager.cs" />
+    <Compile Include="Versioning\IDataUpdater.cs" />
+    <Compile Include="Versioning\IRoutinesProvider.cs" />
+    <Compile Include="Versioning\IVersionedComponent.cs" />
+    <Compile Include="Versioning\IVersionEntity.cs" />
+    <Compile Include="Versioning\IVersionPersistenceProvider.cs" />
+    <Compile Include="Versioning\IVersionUpdaterRoutine.cs" />
+    <Compile Include="Versioning\DataUpdaterBase.cs" />
+    <Compile Include="Versioning\VersioningException.cs" />
+    <Compile Include="Versioning\VersionPersistenceProvider.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Data\Templates\ConfigurationAccessor.tt" />
+    <None Include="Data\Templates\DataContext.tt" />
+    <None Include="Data\Templates\Edm.tt" />
+    <None Include="Data\Templates\EntityInterfaces.tt" />
+    <None Include="Data\Templates\Indices.tt" />
+    <None Include="Data\Templates\ViewGeneration.tt">
+      <LastGenOutput>ViewGeneration.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

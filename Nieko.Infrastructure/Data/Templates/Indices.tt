@@ -1,0 +1,218 @@
+﻿<#@ template language="C#" debug="true" hostspecific="true"#>
+<#@ output extension=".sql"#>
+<#
+// $Localized_EOCO_Comment_10$
+// $Localized_EOCO_Comment_20$
+// $Localized_EOCO_Comment_30$
+//
+//  $Localized_EOCO_Comment_40$
+//  $Localized_EOCO_Comment_50$
+//  $Localized_EOCO_Comment_60$
+//  $Localized_EOCO_Comment_70$
+//  $Localized_EOCO_Comment_80$
+//  $Localized_EOCO_Comment_90$
+//  $Localized_EOCO_Comment_100$
+//  $Localized_EOCO_Comment_110$
+//
+//  $Localized_EOCO_Comment_120$
+//  $Localized_EOCO_Comment_130$
+//  $Localized_EOCO_Comment_140$
+//  $Localized_EOCO_Comment_150$
+#>
+<#@ include file="EF.Utility.CS.ttinclude"#><#
+
+string ModelPath = Path.GetFileNameWithoutExtension(this.Host.TemplateFile).ToLowerInvariant().Replace(".indices", "") + ".edmx";
+
+UserSettings userSettings =
+        new UserSettings
+        {
+            SourceCsdlPath = ModelPath,
+                        ReferenceCsdlPaths = new string[] {},
+            FullyQualifySystemTypes = true,
+            CreateContextAddToMethods = true,
+            CamelCaseFields = false,
+        };
+
+string dbSchema;
+		
+ApplyUserSettings(userSettings);
+if(Errors.HasErrors)
+{
+    return String.Empty;
+}
+
+MetadataLoader loader = new MetadataLoader(this);
+MetadataTools ef = new MetadataTools(this);
+CodeRegion region = new CodeRegion(this);
+CodeGenerationTools code = new CodeGenerationTools(this){FullyQualifySystemTypes = userSettings.FullyQualifySystemTypes, CamelCaseFields = userSettings.CamelCaseFields};
+
+ItemCollection = loader.CreateEdmItemCollection(SourceCsdlPath, ReferenceCsdlPaths.ToArray());
+
+bool hasPrimaryKey;
+int propertiesCount;
+int i;
+IEnumerable<EdmProperty> properties;
+IEnumerable<NavigationProperty> navigationProperties;
+EntityType entity;
+
+StoreItemCollection sic;
+loader.TryCreateStoreItemCollection(SourceCsdlPath, out sic);
+var storeItems = sic.GetItems<EntityContainer>().First();
+
+foreach (EntityContainer container in GetSourceSchemaTypes<EntityContainer>())
+    {
+		
+	foreach (EntitySet set in container.BaseEntitySets.OfType<EntitySet>())
+	{
+		var storeEntitySet = storeItems.GetEntitySetByName(code.Escape(set.Name), true);
+		dbSchema = storeEntitySet.MetadataProperties["Schema"].Value.ToString();
+		
+		entity = set.ElementType;
+			hasPrimaryKey = entity.Properties.Any(p=>p.Documentation != null 
+					&& p.Documentation.LongDescription != null 
+					&& p.Documentation.LongDescription.Contains("[PrimaryKey]")) ||
+				entity.NavigationProperties.Any(n => n.DeclaringType == entity
+					&& n.Documentation != null &&
+					n.Documentation.LongDescription != null &&
+					n.Documentation.LongDescription.Contains("[PrimaryKey]"));
+			if(!hasPrimaryKey)
+			{
+				continue;
+			}
+			
+	#>
+
+		IF EXISTS (SELECT si.ID FROM sysindexes si INNER JOIN sys.tables so ON si.ID = so.object_id 
+				 WHERE SCHEMA_NAME(schema_id)+'.' + so.name + '.['+si.name+']' = '<#=dbSchema + "." + set.Name + "."#><#="[ID_PrimaryKey_" + set.Name + "]"#>')
+		    DROP INDEX <#=dbSchema + "." + set.Name#>.<#="[ID_PrimaryKey_" + set.Name#>];
+		GO
+
+		CREATE UNIQUE INDEX <#="[ID_PrimaryKey_" + set.Name#>]
+		ON <#=dbSchema + "." + set.Name#>
+		(
+		<#
+		
+		properties = entity.Properties.Where(p => p.DeclaringType == entity && p.TypeUsage.EdmType is PrimitiveType
+			&&  p.Documentation != null 
+				&& p.Documentation.LongDescription != null 
+				&& p.Documentation.LongDescription.Contains("[PrimaryKey]"));
+			
+		navigationProperties = entity.NavigationProperties.Where(n => n.DeclaringType == entity
+			&& n.Documentation != null &&
+			n.Documentation.LongDescription != null &&
+			n.Documentation.LongDescription.Contains("[PrimaryKey]"));
+			
+		propertiesCount = properties.Count() + navigationProperties.Count();
+		i = 0;
+		foreach (EdmProperty property in properties)
+	    {
+			i++;
+			#>
+		[<#=AsString(property.Name)#>]<#=i<propertiesCount?",":""#>
+			<#
+		}
+		
+		foreach (NavigationProperty navProperty in navigationProperties)
+		{
+			i++;
+			#>
+		[<#=AsString(navProperty.Name)#>_Id]<#=i<propertiesCount?",":""#>
+			<#
+		}
+		#>
+		
+		)<#
+		
+	}
+}
+#>
+
+<#+
+public string SourceCsdlPath{ get; set; }
+public EdmItemCollection ItemCollection{ get; set; }
+public IEnumerable<string> ReferenceCsdlPaths{ get; set; }
+public Nullable<bool> CreateContextAddToMethods{ get; set; }
+public Dictionary<string, string> EdmToObjectNamespaceMap
+{
+    get { return _edmToObjectNamespaceMap; }
+    set { _edmToObjectNamespaceMap = value; }
+}
+public Dictionary<string, string> _edmToObjectNamespaceMap = new Dictionary<string, string>();
+public Double SourceEdmVersion
+{
+    get
+    {
+        if (ItemCollection != null)
+        {
+            return ItemCollection.EdmVersion;
+        }
+
+        return 0.0;
+    }
+}
+
+void ApplyUserSettings(UserSettings userSettings)
+{
+    // $Localized_EOCO_Comment_470$
+    if (SourceCsdlPath == null)
+    {
+#if !PREPROCESSED_TEMPLATE
+        if(userSettings.SourceCsdlPath == "$" + "edmxInputFile" + "$")
+        {
+            Errors.Add(new System.CodeDom.Compiler.CompilerError(Host.TemplateFile, 0, 0, "",
+                ""));
+            return;
+        }
+
+        SourceCsdlPath = Host.ResolvePath(userSettings.SourceCsdlPath);
+#else
+        SourceCsdlPath = userSettings.SourceCsdlPath;
+#endif
+    }
+
+	// normalize the path, remove ..\ from it
+    SourceCsdlPath = Path.GetFullPath(SourceCsdlPath);
+
+	if (ReferenceCsdlPaths == null)
+    {
+        ReferenceCsdlPaths = userSettings.ReferenceCsdlPaths;
+    }
+
+    if (!CreateContextAddToMethods.HasValue)
+    {
+        CreateContextAddToMethods = userSettings.CreateContextAddToMethods;
+    }
+    
+}
+
+string AsString(object parameter)
+{
+	if(parameter == null)
+	{
+		return "";
+	}
+	
+	return parameter.ToString();
+}
+
+class UserSettings
+{
+    public string SourceCsdlPath{ get; set; }
+    public string[] ReferenceCsdlPaths{ get; set; }
+    public bool FullyQualifySystemTypes{ get; set; }
+    public bool CreateContextAddToMethods{ get; set; }
+    public bool CamelCaseFields{ get; set; }
+}
+
+IEnumerable<T> GetSourceSchemaTypes<T>() where T : GlobalItem
+{
+    if (Path.GetExtension(SourceCsdlPath) != ".edmx")
+    {
+        return ItemCollection.GetItems<T>().Where(e => e.MetadataProperties.Any(mp => mp.Name == "SchemaSource" && (string)mp.Value == SourceCsdlPath));
+    }
+    else
+    {
+        return ItemCollection.GetItems<T>();
+    }
+}
+#>

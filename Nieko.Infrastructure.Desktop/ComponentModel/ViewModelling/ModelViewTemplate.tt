@@ -1,0 +1,70 @@
+﻿<#@ template debug="true" hostspecific="false" language="C#" #>
+<#@ import namespace="System.Collections.Generic"#>
+<#@ import namespace="System.Linq"#> 
+<#@ import namespace="System.Text" #>
+<#@ parameter name="ClassName" type="System.string"#>
+<#@ parameter name="BaseType" type="System.Type"#>
+<#@ parameter name="HasNotifyingFields" type="System.Boolean"#>
+<#@ parameter name="PropertyTypes" type="System.string[]"#>
+<#@ parameter name="PropertyNames" type="System.string[]"#>
+<#@ parameter name="NonNullableProperties" type="System.string[]"#>
+
+	[Serializable]
+	public partial class <#=ClassName#> <#=BaseType == typeof(object) ? "" : " : " + BaseType.FullName#>
+	{
+	<#
+		
+for(int i = 0; i<PropertyTypes.Length; i++)
+{
+			
+				#>
+	public <#=PropertyTypes[i]#> <#=PropertyNames[i]#><#
+	if(!HasNotifyingFields)
+	{
+		#>{ get; set; }
+	
+		<#
+	}
+	else
+	{
+		#>
+		
+		{
+			get
+			{
+				return Get(() => <#=PropertyNames[i]#>);
+			}
+			set
+			{
+				Set(() => <#=PropertyNames[i]#>, value);
+			}
+		}
+		
+		<#
+	}
+	
+}
+
+if(NonNullableProperties.Length > 0 && typeof(Nieko.Infrastructure.ViewModel.EditableViewModel).IsAssignableFrom(BaseType))
+{
+	#>
+	protected override void InitializeValidation()
+	{
+		base.InitializeValidation();
+<#
+	foreach(var propertyName in NonNullableProperties)
+	{
+		#>
+		AddValidation(<#=propertyName#>, new Func<string>(() => <#=propertyName#> == null ? "Required field" : string.Empty) );
+		<#
+		
+	}
+	#>
+	}
+	<#
+}
+
+	#>
+	
+	}
+	

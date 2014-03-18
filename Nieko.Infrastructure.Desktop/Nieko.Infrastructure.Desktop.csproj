@@ -1,0 +1,256 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{29E8C46D-62D3-427A-A2C2-4AAFBB0336BB}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Nieko.Infrastructure</RootNamespace>
+    <AssemblyName>Nieko.Infrastructure.Desktop</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Utf8Output>true</Utf8Output>
+    <ExpressionBlendVersion>4.0.20525.0</ExpressionBlendVersion>
+    <PublishUrl>http://localhost/Nieko.Infrastructure.Desktop/</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Web</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug Release Con|AnyCPU'">
+    <OutputPath>bin\Debug Release Con\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>false</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Release\Nieko.Infrastructure.Desktop.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisRuleDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Program Files\NLog\.NET Framework 4.0\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="PresentationUI" />
+    <Reference Include="ReachFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="Xceed.Wpf.Toolkit, Version=1.9.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\3rd Party\4.0\Xceed.Wpf.Toolkit\Xceed.Wpf.Toolkit.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ComponentModel\IWeakEventDestination.cs" />
+    <Compile Include="ComponentModel\IWeakEventRouter.cs" />
+    <Compile Include="ComponentModel\ViewModelling\DataDefinition`.cs" />
+    <Compile Include="ComponentModel\ViewModelling\IModelViewDefinition.cs" />
+    <Compile Include="ComponentModel\ViewModelling\ModelViewTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ModelViewTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ComponentModel\ViewModelling\MappingDefinition.cs" />
+    <Compile Include="ComponentModel\ViewModelling\ModelViewDefinition`.cs" />
+    <Compile Include="ComponentModel\WeakEventManagerBase.cs" />
+    <Compile Include="ComponentModel\WeakEventRouter.cs" />
+    <Compile Include="ComponentModel\WeakEventRouter```.cs" />
+    <Compile Include="ComponentModel\WeakEventRouter````.cs" />
+    <Compile Include="EventAggregation\ISubFormExportRequestEvent.cs" />
+    <Compile Include="EventAggregation\IFormSuiteRequestEvent.cs" />
+    <Compile Include="Export\IPrintManager.cs" />
+    <Compile Include="Export\PrintChildAttribute.cs" />
+    <Compile Include="IApplicationDetails.cs" />
+    <Compile Include="Navigation\RecordNavigation\IOwnershipHierarchy.cs" />
+    <Compile Include="Navigation\RecordNavigation\PersistingChangesEventArgs.cs" />
+    <Compile Include="Styles\SampleData\MembershipProviderLineItemSample.cs" />
+    <Compile Include="Styles\SampleData\MembershipProviderSample.cs" />
+    <Compile Include="Windows\Data\IEntityGraphFactory``.cs" />
+    <Compile Include="Windows\Data\IFinishedGraphFactory```.cs" />
+    <Compile Include="Windows\Data\IMembershipProvider.cs" />
+    <Compile Include="Navigation\IMenuBarManager.cs" />
+    <Compile Include="Navigation\RecordNavigation\IDataNavigator.cs" />
+    <Compile Include="Navigation\RecordNavigation\IDataNavigatorOwner.cs" />
+    <Compile Include="Navigation\RecordNavigation\IUIConfig.cs" />
+    <Compile Include="Navigation\RecordNavigation\MainUIConfig.cs" />
+    <Compile Include="Navigation\RecordNavigation\NonEditAttribute.cs" />
+    <Compile Include="Navigation\RecordNavigation\SimpleVisibilityProvider.cs" />
+    <Compile Include="Navigation\RecordNavigation\UIConfig.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Navigation\RecordNavigation\EditState.cs" />
+    <Compile Include="Navigation\RecordNavigation\IDataNavigatorViewModel.cs" />
+    <Compile Include="Navigation\RecordNavigation\IDataNavigatorOwnerBuilder.cs" />
+    <Compile Include="Navigation\RecordNavigation\IDataNavigatorFactory.cs" />
+    <Compile Include="Navigation\RecordNavigation\IDataNavigatorView.cs" />
+    <Compile Include="Navigation\RecordNavigation\INavigatorVisibilityProvider.cs" />
+    <Compile Include="Navigation\RecordNavigation\RecordNavigation.cs" />
+    <Compile Include="CoreRegionNames.cs" />
+    <Compile Include="ViewModel\DataViewModel.cs" />
+    <Compile Include="Windows\Data\IConstructedPersistedView.cs" />
+    <Compile Include="Windows\Data\IConstructedPersistedView```.cs" />
+    <Compile Include="Windows\Data\IFinishedGraphFactory````.cs" />
+    <Compile Include="Windows\Data\IMembershipProviderFactoryWithRelationship```.cs" />
+    <Compile Include="Windows\Data\IMembershipProviderFactory````.cs" />
+    <Compile Include="Windows\Data\IMembershipProvider`.cs" />
+    <Compile Include="Windows\Data\IMembershipProviderFactory```.cs" />
+    <Compile Include="Windows\Data\INotifyModelViewGraphNodeLoaded.cs" />
+    <Compile Include="Windows\Data\IOwnedGraphFactory.cs" />
+    <Compile Include="Windows\Data\IPersistedView`.cs" />
+    <Compile Include="Windows\Data\ListCollectionViewWrapper.cs" />
+    <Compile Include="Windows\Data\MembershipLineItem.cs" />
+    <Compile Include="Windows\Data\SampleData\PersistedViewSample`.cs" />
+    <Compile Include="Windows\Data\SingletonPersistedView.cs" />
+    <Compile Include="Windows\FormsSuiteBase.cs" />
+    <Compile Include="Windows\FormsSuiteControl.cs" />
+    <Compile Include="Windows\IExportableSubForm.cs" />
+    <Compile Include="Windows\IFormsManager.cs" />
+    <Compile Include="Windows\IFormsSuite.cs" />
+    <Compile Include="Windows\ISuiteForm.cs" />
+    <Compile Include="Windows\ISuiteFormViewModel.cs" />
+    <Compile Include="Windows\NotifyingFormsSuiteBase.cs" />
+    <Compile Include="Windows\NullVisibilityConverter.cs" />
+    <Compile Include="Windows\StartupFormDetails.cs" />
+    <Compile Include="Windows\SubFormsProvider.cs" />
+    <Compile Include="Windows\SuiteForm.cs" />
+    <Compile Include="Windows\ViewModelForm.cs" />
+    <Compile Include="Windows\FormsProvider.cs" />
+    <Compile Include="ViewModel\EditableViewModel.cs" />
+    <Compile Include="Windows\Background\Desktop.xaml.cs">
+      <DependentUpon>Desktop.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\Background\DesktopViewModel.cs" />
+    <Compile Include="Windows\Background\IDesktopViewModel.cs" />
+    <Compile Include="Windows\BoolExpanderHeaderConverter.cs" />
+    <Compile Include="Windows\ColumnBox.cs" />
+    <Compile Include="Windows\Data\IGraphFactory.cs" />
+    <Compile Include="Windows\Data\IMembershipProviderFactory`.cs" />
+    <Compile Include="Windows\Data\IMembershipProviderLineItem.cs" />
+    <Compile Include="Windows\Data\IPersistedViewRoot.cs" />
+    <Compile Include="ViewModel\IViewModelBase.cs" />
+    <Compile Include="ViewModel\ViewModelBase.cs" />
+    <Compile Include="Windows\BoolVisibilityConverter.cs" />
+    <Compile Include="Windows\Data\IPersistedView.cs" />
+    <Compile Include="Windows\IViewBase.cs" />
+    <Compile Include="Windows\MemberList.cs" />
+    <Compile Include="Windows\NullDisabledConverter.cs" />
+    <Compile Include="Windows\RelayCommand.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Styles\ColumnBox.xaml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Styles\FlatButton.xaml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Styles\FormsSuiteControl.xaml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Styles\MemberList.xaml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Styles\NiekoResources.xaml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Styles\SpecialFlatButton.xaml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Styles\WPFToolkit.xaml">
+      <SubType>Designer</SubType>
+    </None>
+    <Page Include="Windows\Background\Desktop.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="ComponentModel\ViewModelling\ModelViewTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>ModelViewTemplate.cs</LastGenOutput>
+    </None>
+    <None Include="ComponentModel\ViewModelling\Mapping.tt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Nieko.Infrastructure\Nieko.Infrastructure.csproj">
+      <Project>{62AF9599-8669-4F9B-8E9A-1A60E0F08F92}</Project>
+      <Name>Nieko.Infrastructure</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

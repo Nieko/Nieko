@@ -1,0 +1,180 @@
+﻿<UserControl x:Class="Nieko.Modules.Navigation.RecordNavigator.DataNavigatorControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d"
+             xmlns:dd="clr-namespace:Nieko.Modules.Navigation.RecordNavigator"
+             d:DataContext="{d:DesignInstance Type=dd:DataNavigatorViewModelSample, IsDesignTimeCreatable=True}"
+             Height="42"
+             d:DesignHeight="42" d:DesignWidth="577">
+    <UserControl.Resources>
+        <ControlTemplate x:Key="NavButtonTemplate" TargetType="{x:Type Button}">
+            <ControlTemplate.Resources>
+                <Storyboard x:Key="HoverOn">
+                    <DoubleAnimation Duration="00:00:00.1000000" Storyboard.TargetName="BackgroundOver" Storyboard.TargetProperty="Opacity" To="1"/>
+                    <DoubleAnimation Duration="00:00:00.1000000" Storyboard.TargetName="BackgroundOver_Highlight" Storyboard.TargetProperty="Opacity" To="0.65"/>
+                </Storyboard>
+                <Storyboard x:Key="HoverOff">
+                    <DoubleAnimation Duration="00:00:00.4000000" Storyboard.TargetName="BackgroundOver" Storyboard.TargetProperty="Opacity" To="0"/>
+                    <DoubleAnimation Duration="00:00:00.4000000" Storyboard.TargetName="BackgroundOver_Highlight" Storyboard.TargetProperty="Opacity" To="0"/>
+                </Storyboard>
+                <Storyboard x:Key="PressedOn">
+                    <DoubleAnimation Duration="00:00:00.1000000" Storyboard.TargetName="BackgroundPressed" Storyboard.TargetProperty="Opacity" To="0.84"/>
+                    <DoubleAnimation Duration="00:00:00.1000000" Storyboard.TargetName="BackgoundPressed_Highlight" Storyboard.TargetProperty="Opacity" To="0.65"/>
+                </Storyboard>
+                <Storyboard x:Key="PressedOff">
+                    <DoubleAnimation Duration="00:00:00.4000000" Storyboard.TargetName="BackgroundPressed" Storyboard.TargetProperty="Opacity" To="0"/>
+                    <DoubleAnimation Duration="00:00:00.4000000" Storyboard.TargetName="BackgoundPressed_Highlight" Storyboard.TargetProperty="Opacity" To="0"/>
+                </Storyboard>
+                <Storyboard x:Key="FocusedOn">
+                    <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="FocusVisualElement" Storyboard.TargetProperty="(UIElement.Opacity)">
+                        <SplineDoubleKeyFrame KeyTime="00:00:00.1000000" Value="1"/>
+                    </DoubleAnimationUsingKeyFrames>
+                </Storyboard>
+                <Storyboard x:Key="FocusedOff">
+                    <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="FocusVisualElement" Storyboard.TargetProperty="(UIElement.Opacity)">
+                        <SplineDoubleKeyFrame KeyTime="00:00:00.3000000" Value="0"/>
+                    </DoubleAnimationUsingKeyFrames>
+                </Storyboard>
+            </ControlTemplate.Resources>
+            <Grid x:Name="Grid">
+                <Border x:Name="BackgroundNorm" Background="{StaticResource ButtonNormalBackground}" BorderThickness="1" BorderBrush="#FF8E8F8F" CornerRadius="3"/>
+                <Border x:Name="BackgroundNorm_highlight" Margin="1" BorderBrush="#F2FFFFFF" BorderThickness="1,0,1,1" CornerRadius="3" Opacity="0.65"/>
+                <Border x:Name="BackgroundOver" Background="{StaticResource HoverBrush}" BorderBrush="{StaticResource PressedBrush}" BorderThickness="1" CornerRadius="3" Opacity="0"/>
+                <Border x:Name="BackgroundOver_Highlight" Margin="1" Background="{StaticResource HoverBrush}" BorderBrush="{StaticResource HoverBrush}" BorderThickness="1,0,1,1" CornerRadius="3" Opacity="0"/>
+                <Border x:Name="BackgroundPressed" Background="{StaticResource PressedBrush}" BorderBrush="{StaticResource PressedBorderBrush}" BorderThickness="1" CornerRadius="3" Opacity="0"/>
+                <Border x:Name="BackgoundPressed_Highlight" Background="{StaticResource ShineBrush}" Margin="1" CornerRadius="2.5" Opacity="0"/>
+                <Border x:Name="Background_overlay" Margin="1,1,1,0" BorderThickness="1" CornerRadius="3,3,0,0">
+                    <Border.Background>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="#00FFFFFF" Offset="0"/>
+                            <GradientStop Color="#72FFFFFF" Offset="0.157"/>
+                            <GradientStop Color="#72FFFFFF" Offset="0.5"/>
+                            <GradientStop Color="#00FFFFFF" Offset="0.51"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                </Border>
+                <Border x:Name="DisabledVisualElement" Background="#FFF1F1F1" BorderBrush="#FFB2B2B2" BorderThickness="1" CornerRadius="3" IsHitTestVisible="false" Visibility="Collapsed"/>
+                <ContentPresenter
+                        		x:Name="contentPresenter"
+                        		Content="{TemplateBinding Content}"
+                        		ContentTemplate="{TemplateBinding ContentTemplate}"
+                        		VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                        		HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                        		Margin="{TemplateBinding Padding}"/>
+                <TextBlock Panel.ZIndex="1"
+                        		x:Name="DisabledOverlay"
+                        		Text="{TemplateBinding Content}"
+                        		Foreground="#FF969696"
+                        		HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                        		VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                        		Margin="{TemplateBinding Padding}"
+                        		Visibility="Collapsed"/>
+                <Border x:Name="FocusVisualElement" Margin="1" BorderBrush="{StaticResource ShineBrush}" BorderThickness="1" CornerRadius="2" IsHitTestVisible="false" Opacity="0"/>
+                <Border x:Name="DefaultBorder" Margin="1" BorderBrush="{StaticResource ShineBrush}" BorderThickness="1" CornerRadius="2" IsHitTestVisible="false" Opacity="0"/>
+            </Grid>
+
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsDefault" Value="True">
+                    <Setter Property="Opacity" TargetName="DefaultBorder" Value="1"/>
+                </Trigger>
+                <Trigger Property="IsKeyboardFocused" Value="true">
+
+                    <Trigger.ExitActions>
+                        <BeginStoryboard x:Name="FocusedOff_BeginStoryboard" Storyboard="{StaticResource FocusedOff}"/>
+                    </Trigger.ExitActions>
+                    <Trigger.EnterActions>
+                        <BeginStoryboard x:Name="FocusedOn_BeginStoryboard" Storyboard="{StaticResource FocusedOn}"/>
+                    </Trigger.EnterActions>
+
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="true">
+                    <Trigger.ExitActions>
+                        <BeginStoryboard Storyboard="{StaticResource HoverOff}" x:Name="HoverOff_BeginStoryboard"/>
+                    </Trigger.ExitActions>
+                    <Trigger.EnterActions>
+                        <BeginStoryboard Storyboard="{StaticResource HoverOn}"/>
+                    </Trigger.EnterActions>
+
+                </Trigger>
+                <Trigger Property="IsPressed" Value="true">
+                    <Trigger.ExitActions>
+                        <BeginStoryboard Storyboard="{StaticResource PressedOff}" />
+                    </Trigger.ExitActions>
+                    <Trigger.EnterActions>
+                        <BeginStoryboard Storyboard="{StaticResource PressedOn}"/>
+                    </Trigger.EnterActions>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="true"/>
+                <Trigger Property="IsEnabled" Value="false">
+                    <Setter Property="Opacity" Value="0.4"/>
+                    <!--<Setter Property="Visibility" TargetName="DisabledVisualElement" Value="Visible"/>
+                    <Setter Property="Visibility" TargetName="DisabledOverlay" Value="Visible"/>
+                    <Setter Property="Visibility" TargetName="contentPresenter" Value="Collapsed"/>-->
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+    </UserControl.Resources>
+    <StackPanel Height="30" Width="560" Orientation="Horizontal" Visibility="{Binding ToolBarVisibility, FallbackValue=Visible}" AllowDrop="False">
+        <Button Height="23" HorizontalAlignment="Left" Margin="3,3,0,0" Name="buttonFirst" VerticalAlignment="Top" Width="23" Padding="0" 
+                FontFamily="Calibri" FontSize="14" Command="{Binding Path=First}" Visibility="{Binding FirstVisible}"
+                Template="{StaticResource NavButtonTemplate}">
+            <Image Source="{StaticResource imageNavFirst}" Width="20" Height="20" />
+        </Button>
+        <Button Height="23" HorizontalAlignment="Left" Margin="3,3,0,0" Name="buttonPrevious" VerticalAlignment="Top" Width="23" 
+                Padding="0" FontFamily="Calibri" FontSize="14" Command="{Binding Path=Previous}" Visibility="{Binding PreviousVisible}"
+                Template="{StaticResource NavButtonTemplate}">
+            <Image Source="{StaticResource imageNavPrevious}" Width="20" Height="20" />
+        </Button>
+        <Button Height="23" HorizontalAlignment="Left" Margin="3,3,0,0" Name="buttonNext" VerticalAlignment="Top" Width="23" 
+                Padding="0" FontFamily="Calibri" FontSize="14" Command="{Binding Path=Next}" Visibility="{Binding NextVisible}"
+                Template="{StaticResource NavButtonTemplate}">
+            <Image Source="{StaticResource imageNavNext}" Width="20" Height="20"/>
+        </Button>
+        <Button Height="23" HorizontalAlignment="Left" Margin="3,3,0,0" Name="buttonLast" VerticalAlignment="Top" Width="23" 
+                Padding="0" FontFamily="Calibri" FontSize="14" Command="{Binding Path=Last}" Visibility="{Binding LastVisible}"
+                Template="{StaticResource NavButtonTemplate}">
+            <Image Source="{StaticResource imageNavLast}" Width="20" Height="20" />
+        </Button>
+        <TextBox x:Name="TbPosition" Height="23" Margin="3,4,0,0" Width="76" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="{Binding GoToPositionVisible}">
+            <Binding Path="CurrentPosition" FallbackValue="0">
+                <Binding.ValidationRules>
+                    <ExceptionValidationRule/>
+                </Binding.ValidationRules>
+            </Binding>
+        </TextBox>
+        <Label Content="of" Height="14" HorizontalAlignment="Left" Margin="3,8,0,0" Name="labelOf" VerticalAlignment="Top" 
+                Visibility="{Binding CountVisible}"/>
+        <StackPanel Margin="3,4,0,0" VerticalAlignment="Top" Background="White">
+            <Border Padding="0" Margin="0" BorderBrush="{StaticResource NormalBorderBrush}">
+                <TextBox Height="21" Margin="3,0,0,0" HorizontalAlignment="Left" Name="labelTotalItems" VerticalAlignment="Top" Width="76" 
+                    Text="{Binding Path=Count, FallbackValue=0, Mode=OneWay}"
+                    IsReadOnly="True" Visibility="{Binding CountVisible}">
+                <TextBox.Resources>
+                    <Style TargetType="{x:Type TextBox}">
+                        <Setter Property="KeyboardNavigation.TabNavigation" Value="None"/>
+                        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                        <Setter Property="AllowDrop" Value="true"/>
+                        <Setter Property="Background" Value="#FFFFFFFF"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                        <Setter Property="Padding" Value="0,3,0,0"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        </Style>
+                </TextBox.Resources>
+                </TextBox>
+            </Border>
+        </StackPanel>
+        <Button Content="Edit" FontFamily="Calibri" FontSize="14" Height="23" HorizontalAlignment="Left" Margin="3,4,0,0" Name="buttonEdit" 
+                VerticalAlignment="Top" Width="52" Command="{Binding Edit}" Visibility="{Binding EditVisible}"/>
+        <Button Content="Save" FontFamily="Calibri" FontSize="14" Height="23" HorizontalAlignment="Left" Margin="3,4,0,0" Name="buttonSave" 
+                VerticalAlignment="Top" Width="52" Command="{Binding Save}" Visibility="{Binding SaveVisible}"/>
+        <Button Content="Delete" FontFamily="Calibri" FontSize="14" Height="23" HorizontalAlignment="Left" Margin="3,4,0,0" Name="buttonDelete" 
+                VerticalAlignment="Top" Width="52" Command="{Binding Delete}" Visibility="{Binding DeleteVisible}"/>
+        <Button Content="Cancel" FontFamily="Calibri" FontSize="14" Height="23" HorizontalAlignment="Left" Margin="3,4,0,0" Name="buttoCancel" 
+                VerticalAlignment="Top" Width="52" Command="{Binding Cancel}" Visibility="{Binding CancelVisible}"/>
+        <Button Content="New" FontFamily="Calibri" FontSize="14" Height="23" HorizontalAlignment="Left" Margin="3,4,0,0" Name="buttonNew" 
+                VerticalAlignment="Top" Width="52" Command="{Binding New}" Visibility="{Binding NewVisible}"/>
+    </StackPanel>
+</UserControl>

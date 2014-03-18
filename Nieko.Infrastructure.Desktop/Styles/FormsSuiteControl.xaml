@@ -1,0 +1,41 @@
+<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  mc:Ignorable="d"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:local="clr-namespace:Nieko.Infrastructure.Windows;assembly=Nieko.Infrastructure.Desktop"
+  xmlns:prism="http://www.codeplex.com/CompositeWPF"
+  xmlns:toolKit="http://schemas.microsoft.com/wpf/2008/toolkit">
+
+    <local:BoolVisibilityConverter x:Key="visibuttonlity"/>
+    
+    <Style TargetType="{x:Type local:FormsSuiteControl}" x:Key="FormsSuiteControlBaseStyle">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:FormsSuiteControl}">
+                    <DockPanel>
+                        <Button Margin="7,0" Width="80" Height="32" Visibility="{Binding ShowExportData, Converter={StaticResource visibuttonlity}}" 
+                                Command="{Binding ExportData}" DockPanel.Dock="Right">Export</Button>
+                        <TabControl DockPanel.Dock="Top" ItemsSource="{Binding SubFormNames, RelativeSource={RelativeSource AncestorType={x:Type local:FormsSuiteControl}}}" 
+                                    SelectedIndex="{Binding FormsSuite.SelectedTabIndex, RelativeSource={RelativeSource AncestorType={x:Type local:FormsSuiteControl}}}">
+                            <TabControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Label Content="{Binding}" Margin="7"/>
+                                </DataTemplate>
+                            </TabControl.ItemTemplate> 
+                            <TabControl.ContentTemplate>
+                                <DataTemplate>
+                                    <Grid Visibility="Collapsed"/> 
+                                </DataTemplate>
+                            </TabControl.ContentTemplate> 
+                        </TabControl>
+                    </DockPanel>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <Style TargetType="{x:Type local:FormsSuiteControl}" BasedOn="{StaticResource FormsSuiteControlBaseStyle}"/>
+
+</ResourceDictionary>

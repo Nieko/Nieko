@@ -1,0 +1,150 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:presentationUI="clr-namespace:System.Windows.Documents;assembly=PresentationUI"
+    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+    xmlns:po="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+    mc:Ignorable="d">
+
+    <LinearGradientBrush x:Key="ThemeBackgroundBrush" StartPoint="0.5,1" EndPoint="0.5,0">
+        <GradientStop Color="#FF171717" Offset="0" />
+        <GradientStop Color="#FF0A0A0A" Offset="1" />
+    </LinearGradientBrush>
+    <SolidColorBrush po:Freeze="True" x:Key="ThemeForegroundBrush" Color="White" />
+
+    <!--EXPRESSION DARK VALUES FOR CHARTS-->
+    <Color x:Key="ExpressionTopGradientBrush1">#FFB5B5B5</Color>
+    <Color x:Key="ExpressionBottomGradientBrush1">#FF4C4C4C</Color>
+    <RadialGradientBrush x:Key="ExpressionPieDataPointBrush1">
+        <RadialGradientBrush.RelativeTransform>
+            <TransformGroup>
+                <ScaleTransform CenterX="0.5" CenterY="0.5" ScaleX="2.09" ScaleY="1.819"/>
+                <SkewTransform CenterX="0.5" CenterY="0.5"/>
+                <RotateTransform CenterX="0.5" CenterY="0.5"/>
+                <TranslateTransform X="-0.425" Y="-0.486"/>
+            </TransformGroup>
+        </RadialGradientBrush.RelativeTransform>
+        <GradientStop Color="{StaticResource ExpressionTopGradientBrush1}"/>
+        <GradientStop Color="{StaticResource ExpressionBottomGradientBrush1}" Offset="1"/>
+    </RadialGradientBrush>
+
+    <Color x:Key="ExpressionTopGradientBrush2">#FFDCDCDC</Color>
+    <Color x:Key="ExpressionBottomGradientBrush2">#FF757575</Color>
+    <RadialGradientBrush x:Key="ExpressionPieDataPointBrush2">
+        <RadialGradientBrush.RelativeTransform>
+            <TransformGroup>
+                <ScaleTransform CenterX="0.5" CenterY="0.5" ScaleX="2.09" ScaleY="1.819"/>
+                <SkewTransform CenterX="0.5" CenterY="0.5"/>
+                <RotateTransform CenterX="0.5" CenterY="0.5"/>
+                <TranslateTransform X="-0.425" Y="-0.486"/>
+            </TransformGroup>
+        </RadialGradientBrush.RelativeTransform>
+        <GradientStop Color="{StaticResource ExpressionTopGradientBrush2}"/>
+        <GradientStop Color="{StaticResource ExpressionBottomGradientBrush2}" Offset="1"/>
+    </RadialGradientBrush>
+
+    <Color x:Key="ExpressionTopGradientBrush3">#FFF4F4F4</Color>
+    <Color x:Key="ExpressionBottomGradientBrush3">#FFB7B7B7</Color>
+    <RadialGradientBrush x:Key="ExpressionPieDataPointBrush3">
+        <RadialGradientBrush.RelativeTransform>
+            <TransformGroup>
+                <ScaleTransform CenterX="0.5" CenterY="0.5" ScaleX="2.09" ScaleY="1.819"/>
+                <SkewTransform CenterX="0.5" CenterY="0.5"/>
+                <RotateTransform CenterX="0.5" CenterY="0.5"/>
+                <TranslateTransform X="-0.425" Y="-0.486"/>
+            </TransformGroup>
+        </RadialGradientBrush.RelativeTransform>
+        <GradientStop Color="{StaticResource ExpressionTopGradientBrush3}"/>
+        <GradientStop Color="{StaticResource ExpressionBottomGradientBrush3}" Offset="1"/>
+    </RadialGradientBrush>
+
+    <Color x:Key="ExpressionTopGradientBrush4">#FFF4F4F4</Color>
+    <Color x:Key="ExpressionBottomGradientBrush4">#FFA3A3A3</Color>
+    <RadialGradientBrush x:Key="ExpressionPieDataPointBrush4">
+        <RadialGradientBrush.RelativeTransform>
+            <TransformGroup>
+                <ScaleTransform CenterX="0.5" CenterY="0.5" ScaleX="2.09" ScaleY="1.819"/>
+                <SkewTransform CenterX="0.5" CenterY="0.5"/>
+                <RotateTransform CenterX="0.5" CenterY="0.5"/>
+                <TranslateTransform X="-0.425" Y="-0.486"/>
+            </TransformGroup>
+        </RadialGradientBrush.RelativeTransform>
+        <GradientStop Color="{StaticResource ExpressionTopGradientBrush4}"/>
+        <GradientStop Color="{StaticResource ExpressionBottomGradientBrush4}" Offset="1"/>
+    </RadialGradientBrush>
+    
+	<Style TargetType="{x:Type xctk:RichTextBox}">
+		<Setter Property="KeyboardNavigation.TabNavigation" Value="None"/>
+		<Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+		<Setter Property="AllowDrop" Value="True"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
+        <Setter Property="BorderBrush" Value="Black"/>
+        <Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type xctk:RichTextBox}">
+					<ControlTemplate.Resources>
+						<Storyboard x:Key="HoverOn">
+							<DoubleAnimationUsingKeyFrames BeginTime="0" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="HoverBorder">
+								<SplineDoubleKeyFrame KeyTime="0:0:0.1" Value="0.5"/>
+							</DoubleAnimationUsingKeyFrames>
+						</Storyboard>
+						<Storyboard x:Key="FocusedOn">
+							<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="FocusVisualElement">
+								<SplineDoubleKeyFrame KeyTime="0:0:0.1" Value="1"/>
+							</DoubleAnimationUsingKeyFrames>
+						</Storyboard>
+						<Storyboard x:Key="HoverOff">
+							<DoubleAnimationUsingKeyFrames BeginTime="0" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="HoverBorder">
+								<SplineDoubleKeyFrame KeyTime="0:0:0.4" Value="0"/>
+							</DoubleAnimationUsingKeyFrames>
+						</Storyboard>
+						<Storyboard x:Key="FocusedOff">
+							<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="FocusVisualElement">
+								<SplineDoubleKeyFrame KeyTime="0:0:0.4" Value="0"/>
+							</DoubleAnimationUsingKeyFrames>
+						</Storyboard>
+					</ControlTemplate.Resources>
+					<Grid>
+						<Border x:Name="Border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" CornerRadius="2" Opacity="1">
+							<Grid>
+								<Border BorderThickness="1">
+									<ScrollViewer x:Name="PART_ContentHost" Margin="0" Style="{DynamicResource NuclearScrollViewer}"/>
+								</Border>
+							</Grid>
+						</Border>
+						<Border x:Name="HoverBorder" BorderBrush="#FFD1D1D1" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="2" IsHitTestVisible="False" Opacity="0"/>
+						<Border x:Name="FocusVisualElement" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="2" IsHitTestVisible="False" Opacity="0">
+							<Border.BorderBrush>
+								<LinearGradientBrush EndPoint="0.5,0.971" StartPoint="0.5,0.042">
+									<GradientStop Color="#4CFFFFFF" Offset="0"/>
+									<GradientStop Color="#26FFFFFF" Offset="1"/>
+									<GradientStop Color="#26FFFFFF" Offset="0.467"/>
+									<GradientStop Color="Transparent" Offset="0.475"/>
+									<GradientStop Color="Transparent" Offset="0.856"/>
+								</LinearGradientBrush>
+							</Border.BorderBrush>
+						</Border>
+					</Grid>
+					<ControlTemplate.Triggers>
+						<Trigger Property="IsFocused" Value="True"/>
+						<MultiTrigger>
+							<MultiTrigger.Conditions>
+								<Condition Property="IsMouseOver" Value="True"/>
+								<Condition Property="IsFocused" Value="False"/>
+							</MultiTrigger.Conditions>
+						</MultiTrigger>
+						<Trigger Property="IsEnabled" Value="False">
+							<Setter Property="Background" TargetName="Border" Value="{DynamicResource DisabledBackgroundBrush}"/>
+							<Setter Property="BorderBrush" TargetName="Border" Value="{DynamicResource DisabledBorderBrush}"/>
+							<Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}"/>
+						</Trigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+</ResourceDictionary>

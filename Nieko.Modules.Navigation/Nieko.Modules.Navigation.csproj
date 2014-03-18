@@ -1,0 +1,166 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{A2493BE0-B9B0-4028-8458-9B8666BB64D6}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Nieko.Modules.Navigation</RootNamespace>
+    <AssemblyName>Nieko.Modules.Navigation</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <PublishUrl>http://localhost/Nieko.Modules.Navigation/</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Web</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug Release Con|AnyCPU'">
+    <OutputPath>bin\Debug Release Con\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>false</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Release\Nieko.Modules.Navigation.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisRuleDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Data\FinishedGraphFactory```.cs" />
+    <Compile Include="Data\FinishedGraphFactory`````.cs" />
+    <Compile Include="Data\GraphFactory.cs" />
+    <Compile Include="Data\EntityGraphFactory``.cs" />
+    <Compile Include="Data\LoadProcessStarter.cs" />
+    <Compile Include="Data\MembershipPersistence.cs" />
+    <Compile Include="Data\MembershipPersistenceFactory.cs" />
+    <Compile Include="Data\MembershipProvider.cs" />
+    <Compile Include="Data\MembershipProviderFactory.cs" />
+    <Compile Include="Data\ObjectModel\EfMembershipProvider.cs" />
+    <Compile Include="Data\PersistedView.cs" />
+    <Compile Include="Data\PersistedViewRoot.cs" />
+    <Compile Include="EndPointContextLifetimeManager.cs" />
+    <Compile Include="EndPoints\Root.cs" />
+    <Compile Include="FormExceptionHandler.cs" />
+    <Compile Include="FormsManager.cs" />
+    <Compile Include="MenuBarManager.cs" />
+    <Compile Include="Menus\MenuNavigator.cs" />
+    <Compile Include="Menus\Menu.cs" />
+    <Compile Include="RecordNavigator\DataNavigator.cs" />
+    <Compile Include="RecordNavigator\DataNavigatorOwner.cs" />
+    <Compile Include="RecordNavigator\DataNavigatorOwnerBuilder.cs" />
+    <Compile Include="RecordNavigator\DataNavigatorControl.xaml.cs">
+      <DependentUpon>DataNavigatorControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="RecordNavigator\DataNavigatorFactory.cs" />
+    <Compile Include="RecordNavigator\DataNavigatorViewModel.cs" />
+    <Compile Include="RecordNavigator\EditStateCommand.cs" />
+    <Compile Include="RecordNavigator\OwnershipHierarchy.cs" />
+    <Compile Include="RecordNavigator\RecordNavigationCommand.cs" />
+    <Compile Include="RecordNavigator\SampleData\DataNavigatorViewModelSample.cs" />
+    <Compile Include="StartupNotifier.cs" />
+    <Compile Include="NavigationModule.cs" />
+    <Compile Include="ViewNavigator.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Program Files\Microsoft Prism\PrismLibrary\Desktop\Prism\Prism.Desktop.csproj">
+      <Project>{77138947-1D13-4E22-AEE0-5D0DD046CA34}</Project>
+      <Name>Prism.Desktop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Nieko.Infrastructure.Desktop\Nieko.Infrastructure.Desktop.csproj">
+      <Project>{29E8C46D-62D3-427A-A2C2-4AAFBB0336BB}</Project>
+      <Name>Nieko.Infrastructure.Desktop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Nieko.Infrastructure\Nieko.Infrastructure.csproj">
+      <Project>{62AF9599-8669-4F9B-8E9A-1A60E0F08F92}</Project>
+      <Name>Nieko.Infrastructure</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Nieko.Prism.Desktop\Nieko.Prism.Desktop.csproj">
+      <Project>{AD141061-9393-4EB7-810A-342586719C80}</Project>
+      <Name>Nieko.Prism.Desktop</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="RecordNavigator\DataNavigatorControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
