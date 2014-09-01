@@ -14,7 +14,7 @@ using Microsoft.Practices.Prism.Regions;
 
 namespace Nieko.Modules.Navigation.RecordNavigator
 {
-    public class DataNavigatorOwnerBuilder : IDataNavigatorOwnerBuilder, IDataNavigatorOwnerBuilderOwned, IDataNavigatorOwnerBuilderWithView
+    public class TierCoordinatorBuilder : ITierCoordinatorBuilder, ITierCoordinatorBuilderOwned, ITierCoordinatorBuilderWithView
     {
         private static Dictionary<string, IDataNavigatorView> _NavigatorRegions;
 
@@ -24,18 +24,18 @@ namespace Nieko.Modules.Navigation.RecordNavigator
         private IRegionManager _RegionManager;
         private Func<IDataNavigatorView> _ViewResolver;
 
-        private Func<INotifyDisposing, IDataStoresManager, IDataNavigator, IDataNavigatorOwner> _OwnerBuilder;
+        private Func<INotifyDisposing, IDataStoresManager, IDataNavigator, ITierCoordinator> _OwnerBuilder;
         private INotifyDisposing _Parent;
         private IUIConfig _Config;
         private Action<IDataNavigatorViewModel> _ViewCreationAction = null;
         private Func<bool, IDataNavigator> _DataNavigatorCreation;
         
-        static DataNavigatorOwnerBuilder()
+        static TierCoordinatorBuilder()
         {
             _NavigatorRegions = new Dictionary<string, IDataNavigatorView>();
         }
 
-        public DataNavigatorOwnerBuilder(IDataNavigatorFactory dataNavigatorFactory, IRegionManager regionManager, Func<IDataNavigatorView> viewResolver, IViewNavigator notifyingRegionNavigator, IDataStoresManager dataStoresManager)
+        public TierCoordinatorBuilder(IDataNavigatorFactory dataNavigatorFactory, IRegionManager regionManager, Func<IDataNavigatorView> viewResolver, IViewNavigator notifyingRegionNavigator, IDataStoresManager dataStoresManager)
         {
             _DataNavigatorFactory = dataNavigatorFactory;
             _RegionManager = regionManager;
@@ -44,7 +44,7 @@ namespace Nieko.Modules.Navigation.RecordNavigator
             _DataStoresManager = dataStoresManager;
         }
 
-        public IDataNavigatorOwnerBuilderOwned CreateDataNavigator(INotifyDisposing viewModel)
+        public ITierCoordinatorBuilderOwned CreateDataNavigator(INotifyDisposing viewModel)
         {
             _Parent = viewModel;
             _DataNavigatorCreation = (hasView) => _DataNavigatorFactory.CreateInstance(viewModel, hasView);
@@ -52,20 +52,20 @@ namespace Nieko.Modules.Navigation.RecordNavigator
             return this;
         }
 
-        public IDataNavigatorOwnerBuilderWithView UsingPersistedView<T>(IPersistedView<T> persistedView)
+        public ITierCoordinatorBuilderWithView UsingPersistedView<T>(IPersistedView<T> persistedView)
             where T : IEditableMirrorObject
         {
             _OwnerBuilder = (parent, dataStoresManager, dataNavigator) =>
                 {
-                    DataNavigatorOwner<T> owner;
+                    TierCoordinator<T> owner;
 
-                    if (parent is IDataNavigatorOwner)
+                    if (parent is ITierCoordinator)
                     {
-                        owner = new DataNavigatorOwner<T>((IDataNavigatorOwner)parent, dataStoresManager, dataNavigator, persistedView, _NotifyingRegionNavigator);
+                        owner = new TierCoordinator<T>((ITierCoordinator)parent, dataStoresManager, dataNavigator, persistedView, _NotifyingRegionNavigator);
                     }
                     else
                     {
-                        owner = new DataNavigatorOwner<T>(parent, dataStoresManager, dataNavigator, persistedView, _NotifyingRegionNavigator);
+                        owner = new TierCoordinator<T>(parent, dataStoresManager, dataNavigator, persistedView, _NotifyingRegionNavigator);
                     }
 
                     return owner;
@@ -74,14 +74,14 @@ namespace Nieko.Modules.Navigation.RecordNavigator
             return this;
         }
 
-        public IDataNavigatorOwnerBuilderWithView WithParent(IDataNavigatorOwner parent)
+        public ITierCoordinatorBuilderWithView WithParent(ITierCoordinator parent)
         {
             _Parent = parent;
 
             return this;
         }
 
-        public IDataNavigatorOwnerBuilderWithView ProvidingUIControlAt(IUIConfig config)
+        public ITierCoordinatorBuilderWithView ProvidingUIControlAt(IUIConfig config)
         {
             _Config = config;
 
@@ -135,9 +135,9 @@ namespace Nieko.Modules.Navigation.RecordNavigator
             return this;
         }
 
-        public IDataNavigatorOwner Build()
+        public ITierCoordinator Build()
         {
-            IDataNavigatorOwner owner;
+            ITierCoordinator owner;
             IDataNavigator dataNavigator = _DataNavigatorCreation(_ViewCreationAction != null); 
 
             if (_ViewCreationAction != null)

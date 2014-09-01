@@ -44,17 +44,13 @@ namespace Nieko.Infrastructure.Windows.Background
         
             ApplicationDetails = applicationDetails;
 
-            // A new instance of this class will be created and destroyed
-            // for the period that EndPoint.Root is navigated to. MenuCreated flags whether or not
-            // Window Menus have been created; as they are global menus they should only be
-            // registered once
             if (!MenusCreated)
             {
+                MenusCreated = true;
                 regionNavigator.EnqueueUIWork(() =>
                     {
                         menuBarManager.Create(@"_File\Save To Xml", EndPoint.Root, o => regionNavigator.SaveMainRegionDataToXml());
                     });
-                MenusCreated = true;
             }
         }
 

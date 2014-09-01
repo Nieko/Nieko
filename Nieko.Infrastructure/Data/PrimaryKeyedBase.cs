@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Nieko.Infrastructure.Data
 {
-    public abstract class PrimaryKeyedBase<T> : IPrimaryKeyed, IEquatable<T>
+    public abstract class PrimaryKeyedBase<T> : IPrimaryKeyed, IEquatable<T>, IComparable<T>
         where T : PrimaryKeyedBase<T>
     {
         private PrimaryKey _PrimaryKey;
@@ -42,6 +42,11 @@ namespace Nieko.Infrastructure.Data
         public override int GetHashCode()
         {
             return PrimaryKey.GetHashCode(); 
+        }
+
+        public int CompareTo(T other)
+        {
+            return this.CompareTo((object)other);
         }
     }
 }

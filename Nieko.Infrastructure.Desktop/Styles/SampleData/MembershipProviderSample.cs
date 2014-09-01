@@ -12,11 +12,14 @@ using System.Windows.Input;
 using System.ComponentModel;
 using Nieko.Infrastructure.Data;
 using Nieko.Infrastructure.Collections;
+using Nieko.Infrastructure.ComponentModel;
 
 namespace Nieko.Infrastructure.Styles.SampleData
 {
     public class MembershipProviderSample : ListCollectionViewWrapper, IMembershipProvider<MembershipProviderLineItemSample>
     {
+        public event EventHandler ViewChanged = delegate { };
+
         public ObservableCollection<MembershipProviderLineItemSample> AvailableMemberships { get; private set; }
 
         public MembershipProviderLineItemSample NewItem { get; set; }
@@ -29,7 +32,7 @@ namespace Nieko.Infrastructure.Styles.SampleData
 
         public IEnumerable<MembershipProviderLineItemSample> ItemsLoader() { return null; }
 
-        public IDataNavigatorOwner Owner { get; private set; }
+        public ITierCoordinator Owner { get; private set; }
 
         MembershipProviderLineItemSample IPersistedView<MembershipProviderLineItemSample>.CurrentItem
         {
@@ -79,6 +82,8 @@ namespace Nieko.Infrastructure.Styles.SampleData
             Disposing(this, EventArgs.Empty);
         }
 
+        public event EventHandler<PersistedViewPersistingEventArgs> Persisting = delegate { };
+
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
         public event EventHandler Loaded = delegate { };
@@ -116,6 +121,8 @@ namespace Nieko.Infrastructure.Styles.SampleData
         {
             get { return null; }
         }
+
+        public void SetSource(System.Collections.IList items) { }
     }
 }
 #endif

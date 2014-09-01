@@ -19,7 +19,7 @@ namespace Nieko.Infrastructure.ComponentModel
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="serializer">Class to provide serialization. Must implement <seealso cref="IEndPointContextSerializer"/></param>
+        /// <param name="serializer">Class to provide serialization. Must implement <see cref="IEndPointContextSerializer"/></param>
         public EndPointContextSerializerAttribute(Type serializer)
         {
             if (!typeof(IEndPointContextSerializer).IsAssignableFrom(serializer))

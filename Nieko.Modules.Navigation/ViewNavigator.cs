@@ -42,6 +42,7 @@ namespace Nieko.Modules.Navigation
         private Dictionary<object, string> _ModalActionsRunning = new Dictionary<object, string>();
         private IWaitDialog _CurrentWaitDialog;
         private bool _IsProcessingNotifications;
+        private bool _NotificationsProcessed = false;
 
         public event EventHandler<NavigationEventArgs> Navigating = delegate { };
 
@@ -68,7 +69,12 @@ namespace Nieko.Modules.Navigation
 
             _EventAggregator.Subscribe<IApplicationExitRequestEvent>(ApplicationExitRequested);
             _EventAggregator.Subscribe<IStartupNotificationsRequestEvent>(args => _IsProcessingNotifications = true);
-            _EventAggregator.Subscribe<IInitialActionRequestEvent>(args => _IsProcessingNotifications = false);
+            _EventAggregator.Subscribe<IStartupNotificationsProcessedEvent>(args => 
+                {
+                    _IsProcessingNotifications = false;
+                    _NotificationsProcessed = true;
+                    ProcessUIWorkQueue();
+                });
         }
 
         public bool ClearRegion(string regionName)
@@ -151,6 +157,12 @@ namespace Nieko.Modules.Navigation
                 worker.RunWorkerCompleted += (sender, args) =>
                 {
                     RemoveModalAction(handler);
+
+                    if(args.Error != null)
+                    {
+                        throw new Exception("Modal execution failed", args.Error.InnerException ?? args.Error);
+                    }
+
                     if (finish != null)
                     {
                         finish(sender, args);
@@ -174,7 +186,7 @@ namespace Nieko.Modules.Navigation
         {
             if (!_RunningBackgroundTask)
             {
-                Dispatcher.CurrentDispatcher.BeginInvoke(work, null);
+                Application.Current.Dispatcher.BeginInvoke(work, null);
                 return;
             }
 
@@ -182,16 +194,16 @@ namespace Nieko.Modules.Navigation
             {
                 _UIWorkQueue.Enqueue(() => 
                     {
-                        Dispatcher.CurrentDispatcher.BeginInvoke(work, null);
+                        Application.Current.Dispatcher.BeginInvoke(work, null);
                     });
             });
         }
 
         public void EnqueuePostLayoutWork(Action work)
         {
-            if (!_RunningBackgroundTask)
+            if (!_RunningBackgroundTask && _NotificationsProcessed)
             {
-                Dispatcher.CurrentDispatcher.BeginInvoke(work, DispatcherPriority.ContextIdle);
+                Application.Current.Dispatcher.BeginInvoke(work, DispatcherPriority.ContextIdle);
                 return;
             }
 
@@ -474,7 +486,7 @@ namespace Nieko.Modules.Navigation
 
                 while (_PostLayoutWorkQueue.Count > 0)
                 {
-                    Dispatcher.CurrentDispatcher.BeginInvoke(_PostLayoutWorkQueue.Dequeue(), DispatcherPriority.ContextIdle);
+                    Application.Current.Dispatcher.BeginInvoke(_PostLayoutWorkQueue.Dequeue(), DispatcherPriority.ContextIdle);
                 }
             });
         }

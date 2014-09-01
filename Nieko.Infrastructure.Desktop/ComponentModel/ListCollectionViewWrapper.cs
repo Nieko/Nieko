@@ -5,88 +5,88 @@ using System.Text;
 using System.Windows.Data;
 using System.ComponentModel;
 
-namespace Nieko.Infrastructure.Windows.Data
+namespace Nieko.Infrastructure.ComponentModel
 {
-    public abstract class ListCollectionViewWrapper : IEditableCollectionViewAddNewItem, ICollectionView
+    public abstract class ListCollectionViewWrapper : ICollectionViewWrapper
     {
-        public virtual ListCollectionView View { get; set; }
+        protected virtual ListCollectionView View { get; set; }
 
-        public object AddNewItem(object newItem)
+        public virtual object AddNewItem(object newItem)
         {
             return View.AddNewItem(newItem);
         }
 
-        public bool CanAddNewItem
+        public virtual bool CanAddNewItem
         {
             get { return View.CanAddNewItem;  }
         }
 
-        public object AddNew()
+        public virtual object AddNew()
         {
             return View.AddNew();
         }
 
-        public bool CanAddNew
+        public virtual bool CanAddNew
         {
             get { return View.CanAddNew; }
         }
 
-        public bool CanCancelEdit
+        public virtual bool CanCancelEdit
         {
             get { return View.CanCancelEdit; }
         }
 
-        public bool CanRemove
+        public virtual bool CanRemove
         {
             get { return View.CanRemove; }
         }
 
-        public void CancelEdit()
+        public virtual void CancelEdit()
         {
             View.CancelEdit();
         }
 
-        public void CancelNew()
+        public virtual void CancelNew()
         {
             View.CancelNew();
         }
 
-        public void CommitEdit()
+        public virtual void CommitEdit()
         {
             View.CommitEdit();
         }
 
-        public void CommitNew()
+        public virtual void CommitNew()
         {
             View.CommitNew();
         }
 
-        public object CurrentAddItem
+        public virtual object CurrentAddItem
         {
             get { return View.CurrentAddItem; }
         }
 
-        public object CurrentEditItem
+        public virtual object CurrentEditItem
         {
             get { return View.CurrentEditItem; }
         }
 
-        public void EditItem(object item)
+        public virtual void EditItem(object item)
         {
             View.EditItem(item);
         }
 
-        public bool IsAddingNew
+        public virtual bool IsAddingNew
         {
             get { return View.IsAddingNew; }
         }
 
-        public bool IsEditingItem
+        public virtual bool IsEditingItem
         {
             get { return View.IsEditingItem; }
         }
 
-        public NewItemPlaceholderPosition NewItemPlaceholderPosition
+        public virtual NewItemPlaceholderPosition NewItemPlaceholderPosition
         {
             get
             {
@@ -98,37 +98,37 @@ namespace Nieko.Infrastructure.Windows.Data
             }
         }
 
-        public void Remove(object item)
+        public virtual void Remove(object item)
         {
             View.Remove(item);
         }
 
-        public void RemoveAt(int index)
+        public virtual void RemoveAt(int index)
         {
             View.RemoveAt(index); 
         }
 
-        public bool CanFilter
+        public virtual bool CanFilter
         {
             get { return View.CanFilter; }
         }
 
-        public bool CanGroup
+        public virtual bool CanGroup
         {
             get { return View.CanGroup; }
         }
 
-        public bool CanSort
+        public virtual bool CanSort
         {
             get { return View.CanSort; }
         }
 
-        public bool Contains(object item)
+        public virtual bool Contains(object item)
         {
             return View.Contains(item);
         }
 
-        public System.Globalization.CultureInfo Culture
+        public virtual System.Globalization.CultureInfo Culture
         {
             get
             {
@@ -140,7 +140,7 @@ namespace Nieko.Infrastructure.Windows.Data
             }
         }
 
-        public event EventHandler CurrentChanged
+        public virtual event EventHandler CurrentChanged
         {
             add
             {
@@ -152,7 +152,7 @@ namespace Nieko.Infrastructure.Windows.Data
             }
         }
 
-        public event CurrentChangingEventHandler CurrentChanging
+        public virtual event CurrentChangingEventHandler CurrentChanging
         {
             add
             {
@@ -164,22 +164,22 @@ namespace Nieko.Infrastructure.Windows.Data
             }
         }
 
-        public object CurrentItem
+        public virtual object CurrentItem
         {
             get { return View.CurrentItem; }
         }
 
-        public int CurrentPosition
+        public virtual int CurrentPosition
         {
             get { return View.CurrentPosition; }
         }
 
-        public IDisposable DeferRefresh()
+        public virtual IDisposable DeferRefresh()
         {
             return View.DeferRefresh();
         }
 
-        public Predicate<object> Filter
+        public virtual Predicate<object> Filter
         {
             get
             {
@@ -191,82 +191,82 @@ namespace Nieko.Infrastructure.Windows.Data
             }
         }
 
-        public System.Collections.ObjectModel.ObservableCollection<GroupDescription> GroupDescriptions
+        public virtual System.Collections.ObjectModel.ObservableCollection<GroupDescription> GroupDescriptions
         {
             get { return View.GroupDescriptions; }
         }
 
-        public System.Collections.ObjectModel.ReadOnlyObservableCollection<object> Groups
+        public virtual System.Collections.ObjectModel.ReadOnlyObservableCollection<object> Groups
         {
             get { return View.Groups; }
         }
 
-        public bool IsCurrentAfterLast
+        public virtual bool IsCurrentAfterLast
         {
             get { return View.IsCurrentAfterLast; }
         }
 
-        public bool IsCurrentBeforeFirst
+        public virtual bool IsCurrentBeforeFirst
         {
             get { return View.IsCurrentBeforeFirst; }
         }
 
-        public bool IsEmpty
+        public virtual bool IsEmpty
         {
             get { return View.IsEmpty; }
         }
 
-        public bool MoveCurrentTo(object item)
+        public virtual bool MoveCurrentTo(object item)
         {
             return View.MoveCurrentTo(item); 
         }
 
-        public bool MoveCurrentToFirst()
+        public virtual bool MoveCurrentToFirst()
         {
             return View.MoveCurrentToFirst();
         }
 
-        public bool MoveCurrentToLast()
+        public virtual bool MoveCurrentToLast()
         {
             return View.MoveCurrentToLast();
         }
 
-        public bool MoveCurrentToNext()
+        public virtual bool MoveCurrentToNext()
         {
             return View.MoveCurrentToNext();
         }
 
-        public bool MoveCurrentToPosition(int position)
+        public virtual bool MoveCurrentToPosition(int position)
         {
             return View.MoveCurrentToPosition(position); 
         }
 
-        public bool MoveCurrentToPrevious()
+        public virtual bool MoveCurrentToPrevious()
         {
             return View.MoveCurrentToPrevious(); 
         }
 
-        public void Refresh()
+        public virtual void Refresh()
         {
             View.Refresh();
         }
 
-        public SortDescriptionCollection SortDescriptions
+        public virtual SortDescriptionCollection SortDescriptions
         {
             get { return View.SortDescriptions; }
         }
 
-        public System.Collections.IEnumerable SourceCollection
+        public virtual System.Collections.IEnumerable SourceCollection
         {
             get { return View.SourceCollection; }
         }
 
-        public System.Collections.IEnumerator GetEnumerator()
+        public virtual System.Collections.IEnumerator GetEnumerator()
         {
             return (View as System.Collections.IEnumerable).GetEnumerator();
         }
 
-        public event System.Collections.Specialized.NotifyCollectionChangedEventHandler CollectionChanged
+        public virtual event System.Collections.Specialized.NotifyCollectionChangedEventHandler CollectionChanged
         {
             add
             {
@@ -276,6 +276,16 @@ namespace Nieko.Infrastructure.Windows.Data
             {
                 (View as System.Collections.Specialized.INotifyCollectionChanged).CollectionChanged -= value;
             }
+        }
+
+        public virtual System.Collections.ObjectModel.ReadOnlyCollection<ItemPropertyInfo> ItemProperties
+        {
+            get { return View.ItemProperties; }
+        }
+
+        public virtual int Count
+        {
+            get { return View.Count; }
         }
     }
 }

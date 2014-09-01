@@ -61,7 +61,7 @@ namespace Nieko.Infrastructure.Windows.Data
         /// </summary>
         /// <param name="initializer">Additional actions</param>
         /// <returns>Current instance</returns>
-        IFinishedGraphFactory<T, TEntity, TDataStore> InitializingViewBy(Action<ListCollectionView> initializer);
+        IFinishedGraphFactory<T, TEntity, TDataStore> InitializingViewBy(Action<ICollectionViewWrapper> initializer);
         /// <summary>
         /// Provides alternative Entity Expression builder to retrieve Entities with
         /// </summary>

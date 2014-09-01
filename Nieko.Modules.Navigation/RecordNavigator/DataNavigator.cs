@@ -11,6 +11,7 @@ using System.Windows.Data;
 using System.Collections.Specialized;
 using Nieko.Infrastructure.Navigation;
 using Nieko.Infrastructure.Windows;
+using Nieko.Infrastructure.Windows.Data;
 
 namespace Nieko.Modules.Navigation.RecordNavigator
 {
@@ -24,7 +25,7 @@ namespace Nieko.Modules.Navigation.RecordNavigator
         
         protected NotifyingFields Fields { get; private set;}
 
-        protected ListCollectionView CurrentView { get; private set;}
+        protected ICollectionViewWrapper CurrentView { get; private set;}
 
         protected IViewNavigator RegionNavigator { get; set; }
 
@@ -112,7 +113,7 @@ namespace Nieko.Modules.Navigation.RecordNavigator
 
         public Action<object> Creator { get; set; }
 
-        public IDataNavigatorOwner Owner
+        public ITierCoordinator Owner
         {
             get
             {
@@ -142,6 +143,18 @@ namespace Nieko.Modules.Navigation.RecordNavigator
             private set
             {
                 Set(() => EditState, value);
+            }
+        }
+
+        public IRecordSearch RecordSearch
+        {
+            get
+            {
+                return Get(() => RecordSearch);
+            }
+            set
+            {
+                Set(() => RecordSearch, value);
             }
         }
 
@@ -221,7 +234,12 @@ namespace Nieko.Modules.Navigation.RecordNavigator
 
                         break;
                     case EditState.Edit:
-                        CurrentView.EditItem(CurrentView.CurrentItem);
+                        var editableObject = (CurrentView.CurrentItem as IEditableMirrorObject);
+
+                        if (editableObject == null || !editableObject.IsReadOnly)
+                        {
+                            CurrentView.EditItem(CurrentView.CurrentItem);
+                        }
                         EditState = EditState.Edit;
                         break;
                     case EditState.New:
@@ -255,27 +273,6 @@ namespace Nieko.Modules.Navigation.RecordNavigator
                 _IsChangingState = false;
         }
 
-        public bool Find<T>(Func<T, bool> filter)
-            where T : class
-        {
-            if (CurrentView == null)
-            {
-                return false;
-            }
-
-            var result = CurrentView.Cast<object>()
-                .FirstOrDefault(o => o is T && filter((o as T)));
-
-            if (result == null)
-            {
-                return false;
-            }
-
-            CurrentView.MoveCurrentTo(result);
-
-            return true;
-        }
-
         protected virtual void ViewChangedImpl()
         {
             if (CurrentView != null)
@@ -288,9 +285,10 @@ namespace Nieko.Modules.Navigation.RecordNavigator
                 }
             }
 
-            CurrentView = (Owner == null || Owner.PersistedView == null) ?
+            CurrentView = Owner == null ?
                 null :
-                Owner.PersistedView.View;
+                Owner.PersistedView;
+            RecordSearch = null;
 
             if (CurrentView != null)
             {
@@ -305,6 +303,36 @@ namespace Nieko.Modules.Navigation.RecordNavigator
                 if (CurrentView.CurrentPosition > -1)
                 {
                     OnViewCurrentChanged(CurrentView, EventArgs.Empty);
+                }
+
+                Type baseItemType = null;
+                IEntityPersistedView entityPersistedView = null;
+                var persistedView = (CurrentView as IPersistedView);
+
+                if (persistedView != null)
+                {
+                    baseItemType = persistedView.Owner.ItemType;
+                    entityPersistedView = (persistedView as IEntityPersistedView);
+                }
+                else if (CurrentView.SourceCollection != null &&
+                    CurrentView.SourceCollection.GetType().IsGenericType &&
+                    CurrentView.SourceCollection.GetType().GetGenericArguments().Count() == 1 &&
+                    typeof(IEnumerable<>).MakeGenericType(CurrentView.SourceCollection.GetType().GetGenericArguments().First())
+                        .IsAssignableFrom(CurrentView.SourceCollection.GetType()))
+                {
+                    baseItemType = CurrentView.SourceCollection.GetType().GetGenericArguments().First();
+                }
+
+                if(baseItemType != null && !baseItemType.IsFrameworkType())
+                {
+                    var recordSearch = new RecordSearch(CurrentView, baseItemType);
+                    
+                    if(entityPersistedView != null)
+                    {
+                        recordSearch.EntityDetails = entityPersistedView;
+                    }
+
+                    RecordSearch = recordSearch;
                 }
             }
         }
@@ -419,9 +447,17 @@ namespace Nieko.Modules.Navigation.RecordNavigator
 
             EventHandler handler;
 
-            if (CurrentView.CurrentItem != null && CurrentView.CurrentItem is INotifyPropertyChanged)
+            if (CurrentView.CurrentItem != null)
             {
-                (CurrentView.CurrentItem as INotifyPropertyChanged).PropertyChanged += CurrentItemPropertyChanged;
+                if (CurrentView.CurrentItem is INotifyPropertyChanged)
+                { 
+                    (CurrentView.CurrentItem as INotifyPropertyChanged).PropertyChanged += CurrentItemPropertyChanged;
+                }
+
+                if(CurrentView.CurrentItem is IEditableDataErrorInfoMirror)
+                {
+                    (CurrentView.CurrentItem as IEditableDataErrorInfoMirror).RecheckForErrors(); 
+                }
             }
 
             CurrentPosition = CurrentView.CurrentPosition + 1;
@@ -439,7 +475,7 @@ namespace Nieko.Modules.Navigation.RecordNavigator
 
         private void OnViewCurrentChanging(object sender, CurrentChangingEventArgs e)
         {
-            if (!_ProcessChangeEvents)
+            if (!_ProcessChangeEvents || _IsDisposing)
             {
                 return;
             }

@@ -108,7 +108,7 @@ namespace Nieko.Infrastructure.Windows
         private void InitialiseMemberships(IMembershipProvider membershipProvider)
         {
             OptionsSource = membershipProvider.Options;
-            ItemsSource = membershipProvider.View;
+            ItemsSource = membershipProvider;
             
             RaisePropertyChanged(() => OptionsSource);
             RaisePropertyChanged(() => ItemsSource);

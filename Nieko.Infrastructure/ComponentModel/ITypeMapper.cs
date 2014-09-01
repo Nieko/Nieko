@@ -9,6 +9,10 @@ namespace Nieko.Infrastructure.ComponentModel
 {
     public interface ITypeMapper<TFrom, TTo>
     {
+        ITypeMapper<TFrom, TTo> Cache();
+
+        ITypeMapper<TFrom, TTo> Cache(string name);
+
         /// <summary>
         /// Map between all properties on TFrom and TTo that are Public non-inherited
         /// </summary>
@@ -90,18 +94,63 @@ namespace Nieko.Infrastructure.ComponentModel
         /// <param name="toProperty">Property on TTo</param>
         /// <returns></returns>
         ITypeMapper<TFrom, TTo> RegisterMap<T>(Expression<Func<TFrom, T>> fromProperty, Expression<Func<TTo, T>> toProperty);
+        
+        ITypeMapper<TFrom, TTo> RegisterFromGraph<TValue, TObject>(Expression<Func<TFrom, TValue>> fromProperty, Expression<Func<TTo, TObject>> toProperty, Func<IEnumerable<TObject>> toSource, Func<TObject, TValue> objectAccessor)
+            where TValue : IEquatable<TValue>;
+
+        ITypeMapper<TFrom, TTo> RegisterToGraph<TValue, TObject>(Expression<Func<TFrom, TObject>> fromProperty, Expression<Func<TTo, TValue>> toProperty, Func<IEnumerable<TObject>> fromSource, Func<TObject, TValue> objectAccessor)
+            where TValue : IEquatable<TValue>;
+
+        ITypeMapper<TFrom, TTo> RegisterFromPivot(Action<IPivotFactory<TFrom, TTo>> config);
+
+        ITypeMapper<TFrom, TTo> RegisterToPivot(Action<IPivotFactory<TTo, TFrom>> config);
+
+        /// <summary>
+        /// Maps to and from target types using custom actions
+        /// </summary>
+        /// <param name="fromAction">Action when mapping foward: from &lt;= to</param>
+        /// <param name="toAction">Action when mapping back: from =&gt; to</param>
+        /// <returns></returns>
+        ITypeMapper<TFrom, TTo> RegisterAction(Action<TFrom, TTo> fromAction, Action<TFrom, TTo> toAction);
         /// <summary>
         /// Copies back from i.e. : from &lt;= to
         /// </summary>
         /// <param name="from">object to set property values on</param>
         /// <param name="to">object to take property values from</param>
         void From(TFrom from, TTo to);
-
         /// <summary>
         /// Copies foward to i.e. : from =&gt; to
         /// </summary>
         /// <param name="from">object to take property values from</param>
         /// <param name="to">object to set property values on</param>
         void To(TFrom from, TTo to);
+        /// <summary>
+        /// Mirrors items back to one collection from another i.e. : from &lt;= to
+        /// </summary>
+        /// <param name="from">enumeration of objects to set property values on</param>
+        /// <param name="to">enumeration of objects to take property values from</param>
+        void From(IEnumerable<TFrom> from, IEnumerable<TTo> to);
+        /// <summary>
+        /// Mirrors foward items in one collection to another i.e. : from =&gt; to
+        /// </summary>
+        /// <param name="from">enumeration of objects to take property values from</param>
+        /// <param name="to">enumeration of objects to set property values on</param>
+        void To(IEnumerable<TFrom> from, IEnumerable<TTo> to);
+        /// <summary>
+        /// Duplicates items back from one collection to another, creating a new objects in the
+        /// destination collection i.e. : from &lt;= to
+        /// </summary>
+        /// <param name="from">enumeration of objects to set property values on</param>
+        /// <param name="to">enumeration of objects to take property values from</param>
+        void NewFrom<TNewFrom>(ICollection<TNewFrom> from, IEnumerable<TTo> to)
+            where TNewFrom : TFrom, new();
+        /// <summary>
+        /// Duplicates foward items from one collection to another, creating a new objects in the
+        /// destination collection i.e. : from =&gt; to
+        /// </summary>
+        /// <param name="from">enumeration of objects to take property values from</param>
+        /// <param name="to">enumeration of objects to set property values on</param>
+        void NewTo<TNewTo>(IEnumerable<TFrom> from, ICollection<TNewTo> to)
+            where TNewTo : TTo, new();
     }
 }

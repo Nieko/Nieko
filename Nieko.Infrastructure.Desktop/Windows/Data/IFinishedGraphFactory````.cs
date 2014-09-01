@@ -59,7 +59,7 @@ namespace Nieko.Infrastructure.Windows.Data
         /// </summary>
         /// <param name="initializer">Additional actions</param>
         /// <returns>Current instance</returns>
-        IFinishedGraphFactory<T, TEntity, TParentEntity, TDataStore> InitializingViewBy(Action<ListCollectionView> initializer);
+        IFinishedGraphFactory<T, TEntity, TParentEntity, TDataStore> InitializingViewBy(Action<ICollectionViewWrapper> initializer);
         /// <summary>
         /// Provides Navigation UI Control configuration. The default UI configuration
         /// is to not show a Navigation Control

@@ -14,7 +14,19 @@ namespace Nieko.Infrastructure.ViewModel
     /// </summary>
     public abstract class DataViewModel : ViewModelBase, INavigationAware
     {
-        protected abstract IDataNavigator PrimaryDataNavigator { get; }
+        protected virtual IDataNavigator PrimaryDataNavigator 
+        { 
+            get
+            {
+                return Root != null
+                    && Root.Owner != null
+                    && Root.Owner.Hierarchy.FirstOrDefault() != null
+                    && Root.Owner.Hierarchy.FirstOrDefault().PersistedView != null
+                    && Root.Owner.Hierarchy.FirstOrDefault().PersistedView.Owner != null ?
+                    Root.Owner.Hierarchy.FirstOrDefault().PersistedView.Owner.DataNavigator :
+                    null;
+            }
+        }
 
         protected IPersistedViewRoot Root { get; set; }
 
@@ -22,13 +34,13 @@ namespace Nieko.Infrastructure.ViewModel
         {
             if (Root == null)
             {
-                BuildRoot();
+                Root = BuildRoot();
             }
 
             Root.Load();
         }
 
-        protected abstract void BuildRoot();
+        protected abstract IPersistedViewRoot BuildRoot();
 
         public void NavigationRequested(NavigationRequest request)
         {

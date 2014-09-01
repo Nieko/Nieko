@@ -17,7 +17,11 @@ namespace Nieko.Infrastructure.ComponentModel
         [XmlIgnore]
         PrimaryKey SourceKey { get; set; }
         [XmlIgnore]
+        bool IsReadOnly { get; }
+        [XmlIgnore]
         bool IsEditing { get; }
+        [XmlIgnore]
+        bool SuppressNotifications { get; set; }
         [XmlIgnore]
         bool HasChanged { get; set; }
     }

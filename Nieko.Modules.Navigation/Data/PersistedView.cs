@@ -15,6 +15,7 @@ using Nieko.Infrastructure.Collections;
 using System.Linq.Expressions;
 using Nieko.Infrastructure.Windows.Data;
 using n = Nieko.Infrastructure.Navigation;
+using System.Reflection;
 
 namespace Nieko.Modules.Navigation.Data
 {
@@ -25,7 +26,7 @@ namespace Nieko.Modules.Navigation.Data
         private bool _IsDisposing = false;
         private Dictionary<Type, object> _TypePreloadActions = new Dictionary<Type, object>();
 
-        private Func<IDataNavigatorOwnerBuilder> _BuilderFactory;
+        private Func<ITierCoordinatorBuilder> _BuilderFactory;
         private IWeakEventRouter _ViewCurrentChangedRouter;
         private IWeakEventRouter _CollectionChangedRouter;
 
@@ -33,13 +34,13 @@ namespace Nieko.Modules.Navigation.Data
         private ListCollectionView _View;
         private Dictionary<PrimaryKey, T> _DeletedItems = new Dictionary<PrimaryKey,T>();
 
+        public event EventHandler<PersistedViewPersistingEventArgs> Persisting = delegate { };
         public event EventHandler Loaded;
-        public event EventHandler Disposing;
+        public event EventHandler Disposing = delegate { };
+        public event EventHandler ViewChanged = delegate { };
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected IDataStoresManager DataStoresManager { get; private set; }
-
-        public ReadOnlyDictionary<PrimaryKey> DeletedItems { get; private set; }
 
         protected Action<TEntity> GetKeyPreload<TEntity>()
         {
@@ -98,6 +99,8 @@ namespace Nieko.Modules.Navigation.Data
             }
         }
 
+        public ReadOnlyDictionary<PrimaryKey> DeletedItems { get; private set; }
+
         public ObservableCollection<T> Items 
         {
             get
@@ -129,7 +132,7 @@ namespace Nieko.Modules.Navigation.Data
             }
         }
 
-        public override ListCollectionView View 
+        protected override ListCollectionView View 
         {
             get
             {
@@ -144,11 +147,11 @@ namespace Nieko.Modules.Navigation.Data
 
                 _View = value;
 
-                RaisePropertyChanged(BindingHelper.Name(() => View)); 
+                ViewChanged(this, EventArgs.Empty);
             }
         }
 
-        public IDataNavigatorOwner Owner { get; private set; }
+        public ITierCoordinator Owner { get; private set; }
 
         T IPersistedView<T>.CurrentItem
         {
@@ -162,15 +165,32 @@ namespace Nieko.Modules.Navigation.Data
         {
             get
             {
-                return Owner == null || Owner.DataNavigator == null ? -1 : Owner.DataNavigator.CurrentPosition -1;
+                return View == null ? -1 : View.CurrentPosition;
+                //return Owner == null || Owner.DataNavigator == null ? -1 : Owner.DataNavigator.CurrentPosition -1;
             }
             set
             {
+                if (Owner == null || Owner.DataNavigator == null)
+                {
+                    return;
+                }
                 Owner.DataNavigator.CurrentPosition = value + 1;
             }
         }
 
-        public PersistedView(Func<IDataNavigatorOwnerBuilder> builderFactory, IDataStoresManager dataStoresManager, IPersistedView parent)
+        public new int CurrentPosition
+        {
+            get
+            {
+                return (this as IPersistedView).CurrentPosition;
+            }
+            set
+            {
+                (this as IPersistedView).CurrentPosition = value;
+            }
+        }
+
+        public PersistedView(Func<ITierCoordinatorBuilder> builderFactory, IDataStoresManager dataStoresManager, IPersistedView parent)
         {
             DeletedItems = ReadOnlyDictionary<PrimaryKey>.Create(_DeletedItems);
 
@@ -262,18 +282,37 @@ namespace Nieko.Modules.Navigation.Data
         protected abstract void Save(IPersistedView parent, T item);
         protected abstract void Delete(IPersistedView parent, T item);
 
+        public void SetSource(System.Collections.IList items)
+        {
+            _View = (ListCollectionView)CollectionViewSource.GetDefaultView(items);
+            ViewChanged(this, EventArgs.Empty);
+        }
+
         public void Dispose()
         {
-            if(_IsDisposing)
+            lock (_Lock)
             {
-                return;
+                if (_IsDisposing)
+                {
+                    return;
+                }
+
+                _IsDisposing = true;
+            }
+
+            if (_Items != null && _View != null)
+            {
+                MethodInfo methodInfo = _View.GetType().GetMethod("OnCollectionChanged",
+                   BindingFlags.NonPublic | BindingFlags.Instance, null,
+                   new Type[] { typeof(object), typeof(NotifyCollectionChangedEventArgs) },
+                   null);
+                NotifyCollectionChangedEventHandler changedHandler = (NotifyCollectionChangedEventHandler)
+                   Delegate.CreateDelegate(typeof(NotifyCollectionChangedEventHandler), _View, methodInfo);
+                _Items.CollectionChanged -= changedHandler;
             }
 
             var handler = Disposing;
-            if (handler != null)
-            {
-                handler(this, EventArgs.Empty);
-            }
+            handler(this, EventArgs.Empty);
 
             DisposeImpl();
         }
@@ -304,6 +343,11 @@ namespace Nieko.Modules.Navigation.Data
             }
         }
 
+        protected void RaisePersisting(object lineItem, object entity, PersistedViewPersistAction action)
+        {
+            Persisting(this, new PersistedViewPersistingEventArgs(lineItem, entity, action));
+        }
+
         private void ItemsChanged(PersistedView<T> owner, INotifyCollectionChanged sender, NotifyCollectionChangedEventArgs args)
         {
             if (args.Action == NotifyCollectionChangedAction.Remove)
@@ -323,11 +367,21 @@ namespace Nieko.Modules.Navigation.Data
         }
     }
 
-    internal abstract class PersistedView<T, TEntity, TDataStore> : PersistedView<T>
+    internal abstract class PersistedView<T, TEntity, TDataStore> : PersistedView<T>, IEntityPersistedView
         where T : class, IEditableMirrorObject, new()
         where TDataStore : class, IDataStore
         where TEntity : class, new()
     {
+        public Type EntityType { get { return typeof(TEntity); } }
+
+        public Action<Action<IDataStore>> UnitOfWorkStart
+        {
+            get
+            {
+                return work => DataStoresManager.DoUnitOfWork<TDataStore>(work);
+            }
+        }
+
         protected virtual Func<IQueryable<TEntity>, IQueryable<TEntity>> EntitiesQuery
         {
             get
@@ -346,14 +400,16 @@ namespace Nieko.Modules.Navigation.Data
 
         protected abstract ITypeMapper<T, TEntity> Mapper { get; }
 
-        public PersistedView(Func<IDataNavigatorOwnerBuilder> builderFactory, IDataStoresManager dataStoresManager, IPersistedView owner)
+        public PersistedView(Func<ITierCoordinatorBuilder> builderFactory, IDataStoresManager dataStoresManager, IPersistedView owner)
             : base(builderFactory, dataStoresManager, owner) { }
 
         protected virtual T ToLineItem(TEntity entity)
         {
             var lineItem = new T();
 
+            lineItem.SuppressNotifications = true;
             Mapper.From(lineItem, entity);
+            lineItem.SuppressNotifications = false;
             lineItem.SourceKey = GetSourceKey(entity);
             GetKeyPreload<TEntity>()(entity);
 
@@ -390,28 +446,31 @@ namespace Nieko.Modules.Navigation.Data
 
         protected override void Save(IPersistedView parent, T item)
         {
-            if (item.SourceKey == null)
-            {
-                DataStoresManager.DoUnitOfWork<TDataStore>(dataStore =>
+            DataStoresManager.DoUnitOfWork<TDataStore>(dataStore =>
                 {
-                    TEntity entity = new TEntity();
-                    Mapper.To(item, entity);
+                    TEntity entity = null;
 
-                    dataStore.Save<TEntity>(entity);
+                    if (item.SourceKey == null)
+                    {
 
-                    item.SourceKey = GetSourceKey(entity);
+                        entity = new TEntity();
+                        Mapper.To(item, entity);
+
+                        dataStore.Save<TEntity>(entity);
+
+                        item.SourceKey = GetSourceKey(entity);
+                    }
+                    else
+                    {
+
+                        entity = dataStore.GetItem<TEntity>(item.SourceKey.ToFilterExpression<TEntity>());
+                        Mapper.To(item, entity);
+
+                        dataStore.Save<TEntity>(entity);
+                    }
+
+                    RaisePersisting(item, entity, PersistedViewPersistAction.AfterSave); 
                 });
-            }
-            else
-            {
-                DataStoresManager.DoUnitOfWork<TDataStore>(dataStore =>
-                {
-                    TEntity entity = dataStore.GetItem<TEntity>(item.SourceKey.ToFilterExpression<TEntity>());
-                    Mapper.To(item, entity);
-
-                    dataStore.Save<TEntity>(entity);
-                });
-            }
         }
 
         protected override void Delete(IPersistedView parent, T item)
@@ -419,18 +478,29 @@ namespace Nieko.Modules.Navigation.Data
             DataStoresManager.DoUnitOfWork<TDataStore>(dataStore =>
             {
                 TEntity entity = dataStore.GetItem<TEntity>(item.SourceKey.ToFilterExpression<TEntity>());
-
+                
+                RaisePersisting(item, entity, PersistedViewPersistAction.BeforeDelete);
                 dataStore.Delete<TEntity>(entity);
             });
         }
     }
 
-    internal abstract class PersistedView<T, TEntity, TParentEntity, TDataStore> : PersistedView<T>
+    internal abstract class PersistedView<T, TEntity, TParentEntity, TDataStore> : PersistedView<T>, IEntityPersistedView
         where T : class, IEditableMirrorObject, new()
         where TDataStore : class, IDataStore
         where TEntity : class, new()
     {
         public bool CascadeDelete { get; set; }
+
+        public Type EntityType { get { return typeof(TEntity); } }
+
+        public Action<Action<IDataStore>> UnitOfWorkStart
+        {
+            get
+            {
+                return work => DataStoresManager.DoUnitOfWork<TDataStore>(work);
+            }
+        }
 
         protected virtual Action<TEntity, TParentEntity> SetParent
         {
@@ -450,7 +520,7 @@ namespace Nieko.Modules.Navigation.Data
 
         protected abstract ITypeMapper<T, TEntity> TypeMapper { get; }
 
-        public PersistedView(Func<IDataNavigatorOwnerBuilder> builderFactory, IDataStoresManager dataStoresManager, IPersistedView owner)
+        public PersistedView(Func<ITierCoordinatorBuilder> builderFactory, IDataStoresManager dataStoresManager, IPersistedView owner)
             : base(builderFactory, dataStoresManager, owner) 
         {
             CascadeDelete = true;
@@ -474,7 +544,7 @@ namespace Nieko.Modules.Navigation.Data
 
             DataStoresManager.DoUnitOfWork<TDataStore>(dataStore =>
                 {
-                    IEditableMirrorObject parentCurrentItem = (IEditableMirrorObject)Owner.Parent.PersistedView.View.CurrentItem;
+                    IEditableMirrorObject parentCurrentItem = (IEditableMirrorObject)Owner.Parent.PersistedView.CurrentItem;
                     if (parentCurrentItem == null || parentCurrentItem.SourceKey == null)
                     {
                         items = new List<T>();
@@ -487,10 +557,11 @@ namespace Nieko.Modules.Navigation.Data
                         items = new List<T>();
                         return;
                     }
- 
+
                     items = dataStore.GetItems<TEntity>().Where(this.ParentFilter(parentEntity))
                         .ToList()
-                        .Select(o => ToLineItem(o)); 
+                        .Select(o => ToLineItem(o))
+                        .ToList();
                 });
 
             return items;
@@ -537,7 +608,7 @@ namespace Nieko.Modules.Navigation.Data
                 });
             }
             
-            if(owner.View.CurrentItem != null)
+            if(owner.CurrentItem != null)
             {
                 base.PersistChanges(owner);
             }
@@ -545,7 +616,7 @@ namespace Nieko.Modules.Navigation.Data
 
         protected override void Save(IPersistedView parent, T item)
         {
-            IEditableMirrorObject parentCurrentItem = (IEditableMirrorObject)Owner.Parent.PersistedView.View.CurrentItem;
+            IEditableMirrorObject parentCurrentItem = (IEditableMirrorObject)Owner.Parent.PersistedView.CurrentItem;
 
             if (parentCurrentItem == null)
             {

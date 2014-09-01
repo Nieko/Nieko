@@ -42,7 +42,7 @@ namespace Nieko.Modules.Navigation.Data
             private Func<IQueryable<TEntity>, IQueryable<TEntity>> _EntitiesQuery;
             private Func<IEnumerable<T>, IEnumerable<T>> _ItemsQuery;
             private Action<T> _NewInitializer;
-            private Func<IDataNavigatorOwnerBuilder> _BuilderFactory;
+            private Func<ITierCoordinatorBuilder> _BuilderFactory;
 
             protected override ITypeMapper<T, TEntity> Mapper
             {
@@ -80,7 +80,7 @@ namespace Nieko.Modules.Navigation.Data
                 }
             }
 
-            internal ConstructedPersistedView(Func<IDataNavigatorOwnerBuilder> builderFactory, IDataStoresManager dataStoresManager, IPersistedViewRoot root, ITypeMapper<T, TEntity> typeMapper)
+            internal ConstructedPersistedView(Func<ITierCoordinatorBuilder> builderFactory, IDataStoresManager dataStoresManager, IPersistedViewRoot root, ITypeMapper<T, TEntity> typeMapper)
                 : base(builderFactory, dataStoresManager, root)
             {
                 _TypeMapper = typeMapper;
@@ -154,7 +154,9 @@ namespace Nieko.Modules.Navigation.Data
             protected override T ToLineItem(TEntity entity)
             {
                 var lineItem = base.ToLineItem(entity);
+                lineItem.SuppressNotifications = true;
                 _Mirroring(lineItem, entity);
+                lineItem.SuppressNotifications = false;
 
                 return lineItem;
             }
@@ -162,7 +164,7 @@ namespace Nieko.Modules.Navigation.Data
 
         private Action<ITypeMapper<T, TEntity>> _TypeMapperInitializer = null;
         private Func<Action<T, TEntity>> _MirroringBuilder = null;
-        private Action<ListCollectionView> _ViewInitializer = null;
+        private Action<ICollectionViewWrapper> _ViewInitializer = null;
         private Func<IQueryable<TEntity>, IQueryable<TEntity>> _EntityQuery = null;
         private Func<IEnumerable<T>, IEnumerable<T>> _ItemsQuery = null;
         private IUIConfig _ViewConfig = null;
@@ -170,7 +172,7 @@ namespace Nieko.Modules.Navigation.Data
 
         internal IPersistedViewRoot Root { get; set; }
 
-        internal Func<IDataNavigatorOwnerBuilder> BuilderFactory { get; set; }
+        internal Func<ITierCoordinatorBuilder> BuilderFactory { get; set; }
 
         internal IDataStoresManager DataStoresManager { get; set; }
 
@@ -228,7 +230,7 @@ namespace Nieko.Modules.Navigation.Data
         /// </summary>
         /// <param name="initializer">Additional actions</param>
         /// <returns>Current instance</returns>
-        public IFinishedGraphFactory<T, TEntity, TDataStore> InitializingViewBy(Action<ListCollectionView> initializer)
+        public IFinishedGraphFactory<T, TEntity, TDataStore> InitializingViewBy(Action<ICollectionViewWrapper> initializer)
         {
             _ViewInitializer = initializer;
 
@@ -318,22 +320,19 @@ namespace Nieko.Modules.Navigation.Data
 
         private void SetViewInitializer(ConstructedPersistedView persistedView)
         {
-            PropertyChangedEventHandler propertyChangedHandler = null;
+            EventHandler viewChangedHandler = null;
             EventHandler disposingHandler = null;
 
-            propertyChangedHandler = (sender, args) =>
+            viewChangedHandler = (sender, args) =>
             {
-                if (args.PropertyName == BindingHelper.Name((IPersistedView v) => v.View))
-                {
-                    _ViewInitializer(persistedView.View);
-                }
+                _ViewInitializer(persistedView);
             };
 
-            persistedView.PropertyChanged += propertyChangedHandler;
+            persistedView.ViewChanged += viewChangedHandler;
 
             disposingHandler = (sender, args) =>
             {
-                persistedView.PropertyChanged -= propertyChangedHandler;
+                persistedView.ViewChanged -= viewChangedHandler;
                 persistedView.Disposing -= disposingHandler;
             };
 

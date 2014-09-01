@@ -11,25 +11,28 @@ using System.Collections.ObjectModel;
 using Nieko.Infrastructure.ComponentModel;
 using Nieko.Infrastructure.Collections;
 using Nieko.Infrastructure.Data;
+using System.Collections;
 
 namespace Nieko.Infrastructure.Windows.Data.SampleData
 {
     public class PersistedViewSample<T> : ListCollectionViewWrapper, IPersistedView<T>
         where T : IEditableMirrorObject
     {
+        public event EventHandler<PersistedViewPersistingEventArgs> Persisting = delegate { };
         public event EventHandler Disposing = delegate { };
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
         public event EventHandler Loaded = delegate { };
+        public event EventHandler ViewChanged = delegate { };
 
         private ObservableCollection<T> _Items;
         
-        public IDataNavigatorOwner Owner { get; private set; }
+        public ITierCoordinator Owner { get; private set; }
 
         public new int CurrentPosition
         {
             get
             {
-                return this.CurrentPosition;
+                return base.CurrentPosition;
             }
             set
             {
@@ -82,6 +85,8 @@ namespace Nieko.Infrastructure.Windows.Data.SampleData
         {
             return Items;
         }
+
+        public void SetSource(IList items) { }
     }
 }
 

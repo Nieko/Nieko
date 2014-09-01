@@ -21,10 +21,10 @@ namespace Nieko.Modules.Navigation.Data
     {
         private INotifyDisposing _Owner;
         private Func<IPersistedViewRoot> _RootSupplier;
-        private Func<IDataNavigatorOwnerBuilder> _OwnerBuilder;
+        private Func<ITierCoordinatorBuilder> _OwnerBuilder;
         private IDataStoresManager _DataStoresManager;
 
-        public GraphFactory(Func<IPersistedViewRoot> rootSupplier, Func<IDataNavigatorOwnerBuilder> ownerBuilder, IDataStoresManager dataStoresManager)
+        public GraphFactory(Func<IPersistedViewRoot> rootSupplier, Func<ITierCoordinatorBuilder> ownerBuilder, IDataStoresManager dataStoresManager)
         {
             _RootSupplier = rootSupplier;
             _OwnerBuilder = ownerBuilder;

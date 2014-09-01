@@ -46,7 +46,7 @@ namespace Nieko.Modules.Navigation.Data
             private Func<TParentEntity, Expression<Func<TEntity, bool>>> _ParentFilter = null;
             private IUIConfig _ViewConfig;
             private Action<T> _NewInitializer;
-            private Func<IDataNavigatorOwnerBuilder> _BuilderFactory;
+            private Func<ITierCoordinatorBuilder> _BuilderFactory;
 
             public IPersistedViewRoot Root { get; private set; }
 
@@ -84,7 +84,7 @@ namespace Nieko.Modules.Navigation.Data
 
             internal Func<Action<T, TEntity>> MirroringBuilder { get; set; }
 
-            internal ConstructedPersistedView(Func<IDataNavigatorOwnerBuilder> builderFactory, IDataStoresManager dataStoresManager, IPersistedView owner, ITypeMapper<T, TEntity> typeMapper, Action<TEntity, TParentEntity> parentSetter, Func<TParentEntity, Expression<Func<TEntity, bool>>> parentFilter)
+            internal ConstructedPersistedView(Func<ITierCoordinatorBuilder> builderFactory, IDataStoresManager dataStoresManager, IPersistedView owner, ITypeMapper<T, TEntity> typeMapper, Action<TEntity, TParentEntity> parentSetter, Func<TParentEntity, Expression<Func<TEntity, bool>>> parentFilter)
                 : base(builderFactory, dataStoresManager, owner)
             {
                 _TypeMapper = typeMapper;
@@ -117,6 +117,16 @@ namespace Nieko.Modules.Navigation.Data
                     .ForEntities<TEntity, TChildEntity>();
             }
 
+            protected override T ToLineItem(TEntity entity)
+            {
+                var lineItem = base.ToLineItem(entity);
+                lineItem.SuppressNotifications = true;
+                _Mirroring(lineItem, entity);
+                lineItem.SuppressNotifications = false;
+
+                return lineItem;
+            }
+
             protected override void Load(IPersistedView owner)
             {
                 _Mirroring = MirroringBuilder();
@@ -141,7 +151,7 @@ namespace Nieko.Modules.Navigation.Data
 
         private Action<ITypeMapper<T, TEntity>> _TypeMapperInitializer = null;
         private Func<Action<T, TEntity>> _MirroringBuilder = null;
-        private Action<ListCollectionView> _ViewInitializer = null;
+        private Action<ICollectionViewWrapper> _ViewInitializer = null;
         private IUIConfig _ViewConfig = Nieko.Infrastructure.Navigation.RecordNavigation.UIConfig.NoView;
         private Action<T> _NewInitializer = null;
 
@@ -149,7 +159,7 @@ namespace Nieko.Modules.Navigation.Data
 
         internal IPersistedViewRoot Root { get; set;}
 
-        internal Func<IDataNavigatorOwnerBuilder> BuilderFactory { get; set; }
+        internal Func<ITierCoordinatorBuilder> BuilderFactory { get; set; }
 
         internal IDataStoresManager DataStoresManager { get; set; }
 
@@ -204,7 +214,7 @@ namespace Nieko.Modules.Navigation.Data
         /// </summary>
         /// <param name="initializer">Additional actions</param>
         /// <returns>Current instance</returns>
-        public IFinishedGraphFactory<T, TEntity, TParentEntity, TDataStore> InitializingViewBy(Action<ListCollectionView> initializer)
+        public IFinishedGraphFactory<T, TEntity, TParentEntity, TDataStore> InitializingViewBy(Action<ICollectionViewWrapper> initializer)
         {
             _ViewInitializer = initializer;
 
@@ -281,22 +291,19 @@ namespace Nieko.Modules.Navigation.Data
 
         private void SetViewInitializer(ConstructedPersistedView persistedView)
         {
-            PropertyChangedEventHandler propertyChangedHandler = null;
+            EventHandler viewChangedHandler = null;
             EventHandler disposingHandler = null;
 
-            propertyChangedHandler = (sender, args) =>
+            viewChangedHandler = (sender, args) =>
             {
-                if (args.PropertyName == BindingHelper.Name((IPersistedView v) => v.View))
-                {
-                    _ViewInitializer(persistedView.View);
-                }
+                _ViewInitializer(persistedView);
             };
 
-            persistedView.PropertyChanged += propertyChangedHandler;
+            persistedView.ViewChanged += viewChangedHandler;
 
             disposingHandler = (sender, args) =>
             {
-                persistedView.PropertyChanged -= propertyChangedHandler;
+                persistedView.ViewChanged -= viewChangedHandler;
                 persistedView.Disposing -= disposingHandler;
             };
 

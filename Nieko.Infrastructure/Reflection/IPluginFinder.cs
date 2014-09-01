@@ -12,7 +12,7 @@ namespace Nieko.Infrastructure.Reflection
         /// <summary>
         /// Registers with the finder interest in receiving all plug-ins
         /// of type <typeparamref name="T"/>. The provided <paramref name="callBack"/> will be
-        /// executed either at <seealso cref="IInitializePluginFrameworkEvent"/> or, if event already published,
+        /// executed either at <see cref="IInitializePluginFrameworkEvent"/> or, if event already published,
         /// immediately
         /// </summary>
         /// <remarks>

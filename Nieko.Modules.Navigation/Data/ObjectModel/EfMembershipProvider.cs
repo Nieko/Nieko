@@ -42,7 +42,7 @@ namespace Nieko.Modules.Navigation.Data.ObjectModel
             }
         }
 
-        public EfMembershipProvider(Func<IDataNavigatorOwnerBuilder> builderFactory, IDataStoresManager dataStoresManager, IPersistedView owner)
+        public EfMembershipProvider(Func<ITierCoordinatorBuilder> builderFactory, IDataStoresManager dataStoresManager, IPersistedView owner)
             : base(builderFactory, dataStoresManager, owner) {}
 
         private void BuildMembershipPersistence()

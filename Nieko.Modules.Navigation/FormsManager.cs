@@ -36,7 +36,7 @@ namespace Nieko.Modules.Navigation
             _RegionNavigatorSupplier = regionNavigatorSupplier;
             _FormExceptionHandler = formExceptionHandler;
 
-            pluginFinder.RegisterCreatePluginsCallBack<FormsProvider>(RegisterForms);
+            pluginFinder.RegisterCreatePluginsCallBack<IFormsProvider>(RegisterForms);
         }
 
         public bool Show(EndPoint formEndPoint)
@@ -59,7 +59,7 @@ namespace Nieko.Modules.Navigation
             return RegionNavigator.NavigateTo(formEndPoint); 
         }
 
-        private void RegisterForms(IEnumerable<FormsProvider> providers)
+        private void RegisterForms(IEnumerable<IFormsProvider> providers)
         {
             var forms = providers.SelectMany(p => p.GetAllForms());
 

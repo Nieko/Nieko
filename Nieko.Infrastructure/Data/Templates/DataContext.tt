@@ -75,9 +75,13 @@ namespace <#=code.EscapeNamespace(namespaceName)#>
 #>
 public partial class <#=code.Escape(container)#>Registration : DataStoreRegistration<<#=code.Escape(container)#>>
 {
-	protected override void SetConnectionStringName()
+	protected override string GetConnectionDetails()
 	{
-		ConnectionStringName = DefaultConnectionStringName;
+		return DefaultConnectionStringName;
+	}
+
+	protected override void ConnectionDetailsSet()
+	{
 		Initialize();
 	}
 	
@@ -149,7 +153,7 @@ public ISet<StoredTypeInfo> StoredTypes
     {
         if (_StoredTypes == null)
         {
-            _StoredTypes = new HashSet<StoredTypeInfo>(_ItemsAccessors
+            _StoredTypes = new HashSet<StoredTypeInfo>(ItemsAccessors
                 .Select(i => new StoredTypeInfo(i.Key, () => (IQueryable)i.Value())));
         }
 

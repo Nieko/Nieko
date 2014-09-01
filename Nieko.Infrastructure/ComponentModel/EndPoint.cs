@@ -42,6 +42,8 @@ namespace Nieko.Infrastructure.ComponentModel
     {
         internal static Func<EndPoint, bool> CanAddCheck { get; set; }
 
+        public static string SegmentSeparator { get { return @"/";  } }
+
         /// <summary>
         /// The class in which the static property declaring the EndPoint is a member 
         /// </summary>
@@ -124,12 +126,12 @@ namespace Nieko.Infrastructure.ComponentModel
         {
             if(this == Root)
             {
-                return "/";
+                return SegmentSeparator;
             }
 
             return Parent.GetPath(menuItemsOnly) +
                 ((CreateMenuEntry || !menuItemsOnly) ?
-                    (Parent == Root ? string.Empty : "/") + Description :
+                    (Parent == Root ? string.Empty : SegmentSeparator) + Description :
                     string.Empty);
         }
 
@@ -152,7 +154,7 @@ namespace Nieko.Infrastructure.ComponentModel
         }
 
         /// <summary>
-        /// Create a object for use in serializing / de-serializing EndPoint <seealso cref="MetaContext"/>
+        /// Create a object for use in serializing / de-serializing EndPoint <see cref="MetaContext"/>
         /// </summary>
         /// <param name="dataType">Type of MetaContext object</param>
         /// <returns>New instance of Serializer</returns>

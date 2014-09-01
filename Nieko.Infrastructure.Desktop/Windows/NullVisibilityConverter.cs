@@ -13,14 +13,18 @@ namespace Nieko.Infrastructure.Windows
     /// </summary>
     public class NullVisibilityConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public virtual object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var result = value != null;
+
+            result = parameter != null && parameter.ToString().ToLower() == "invert" ?
+                !result :
+                result;
 
             return result ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public virtual object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }

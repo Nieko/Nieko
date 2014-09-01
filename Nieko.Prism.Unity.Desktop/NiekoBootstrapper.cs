@@ -14,6 +14,8 @@ using Nieko.Infrastructure.Composition;
 using Microsoft.Practices.Prism.Modularity;
 using Nieko.Prism.Modularity;
 using Nieko.Infrastructure;
+using System.Configuration;
+using System.Data.SqlClient;
 
 namespace Nieko.Prism.Unity
 {
@@ -55,6 +57,7 @@ namespace Nieko.Prism.Unity
 
         protected virtual void RegisterDataInterfaces()
         {
+            Logger.Log("Registering Data Interfaces", Category.Info, Priority.Medium);
             SetImplementation<IApplicationDetails>(SetAppDetailsType);
             SetImplementation<IDataStoresManager>(SetDataStoresManagerType);
             ContainerAdapter.RegisterInstance<Func<Type, IDataStore>>(DataStoreSupplier);
@@ -72,12 +75,12 @@ namespace Nieko.Prism.Unity
 
         protected override void InitializeModules()
         {
+            Logger.Log("Initializing Modules", Category.Info, Priority.Medium);
 #if !DEBUG
             Application.Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
 #endif
             ContainerAdapter.RegisterInstance<IContainerAdapter>(ContainerAdapter);
             ContainerAdapter.RegisterInstance<ILogger>(Logger as ILogger, new ContainerControlledLifetimeManager());
-            Nieko.Infrastructure.Logging.Logger.SetLogger(Logger as ILogger); 
 
             RegisterDataInterfaces();
 
@@ -90,7 +93,9 @@ namespace Nieko.Prism.Unity
 
         protected virtual void PublishStartupEvents(IInfrastructureEventAggregator eventAggregator)
         {
+            Logger.Log("Loading Shell", Category.Info, Priority.Medium);
             ShellLoad();
+            Logger.Log("Publishing Startup Events", Category.Info, Priority.Medium);
             eventAggregator.Publish<IModulesInitializedEvent>();
             eventAggregator.Publish<IInitializePluginFrameworkEvent>();
             eventAggregator.Publish<IInitializeSecurityEvent>();
@@ -116,7 +121,10 @@ namespace Nieko.Prism.Unity
 
         protected override ILoggerFacade CreateLogger()
         {
-            return CreatePrismLogger();
+            var logger = CreatePrismLogger();
+
+            Nieko.Infrastructure.Logging.Logger.SetLogger(logger);
+            return logger;
         }
 
         private void SetImplementation<T>(Action<SingletonImplementation<T>> method)

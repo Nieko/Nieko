@@ -18,10 +18,37 @@ namespace Nieko.Infrastructure.ComponentModel
         private List<Action<TFrom, TTo>> _CopyFromGraphs = new List<Action<TFrom, TTo>>();
         private List<Action<TFrom, TTo>> _CopyToGraphs = new List<Action<TFrom, TTo>>();
 
+        private static Dictionary<string, ITypeMapper<TFrom, TTo>> _Cache = new Dictionary<string,ITypeMapper<TFrom,TTo>>();
+        private static object _Lock = new object();
+
         internal bool ToReadOnly { get; set; }
         internal bool FromReadOnly { get; set; }
 
         internal TypeMapper() { }
+
+        public ITypeMapper<TFrom, TTo> Cache()
+        {
+            return Cache(string.Empty);
+        }
+
+        public ITypeMapper<TFrom, TTo> Cache(string name)
+        {
+            lock(_Lock)
+            {
+                ITypeMapper<TFrom, TTo> implementation;
+
+                if(!_Cache.TryGetValue(name, out implementation))
+                {
+                    _Cache.Add(name, this);
+
+                    return this;
+                }
+                else
+                {
+                    return new CachedTypeMapper<TFrom, TTo>(implementation);
+                }
+            }
+        }
 
         public ITypeMapper<TFrom, TTo> RegisterMap<T>(Expression<Func<TFrom, T>> fromProperty, Expression<Func<TTo, T>> toProperty)
         {
@@ -240,6 +267,92 @@ namespace Nieko.Infrastructure.ComponentModel
             return RegisterGraph(referenceSearch, referenceExpression, keyProperties);
         }
 
+        public ITypeMapper<TFrom, TTo> RegisterFromGraph<TValue, TObject>(Expression<Func<TFrom, TValue>> fromProperty, Expression<Func<TTo, TObject>> toProperty, Func<IEnumerable<TObject>> toSource, Func<TObject, TValue> objectAccessor)
+            where TValue : IEquatable<TValue>
+        {
+            var fromAccessor = fromProperty.Compile();
+            var fromSetter = fromProperty.ToSetter().Compile();
+            var toAccessor = toProperty.Compile();
+            var toSetter = toProperty.ToSetter().Compile();
+
+            Action<TFrom, TTo> copyFrom = (from, to) =>
+                {
+                    fromSetter(from, objectAccessor(toAccessor(to)));
+                };
+            Action<TFrom, TTo> copyTo = (from, to) =>
+                {
+                    var item = toSource()
+                        .First(ts => objectAccessor(ts).Equals(fromAccessor(from)));
+                    toSetter(to, item);
+                };
+
+            _CopyFromGraphs.Add(copyFrom);
+            _CopyToGraphs.Add(copyTo);
+
+            return this;
+        }
+
+        public ITypeMapper<TFrom, TTo> RegisterToGraph<TValue, TObject>(Expression<Func<TFrom, TObject>> fromProperty, Expression<Func<TTo, TValue>> toProperty, Func<IEnumerable<TObject>> fromSource, Func<TObject, TValue> objectAccessor)
+            where TValue : IEquatable<TValue>
+        {
+            var fromAccessor = fromProperty.Compile();
+            var fromSetter = fromProperty.ToSetter().Compile();
+            var toAccessor = toProperty.Compile();
+            var toSetter = toProperty.ToSetter().Compile();
+
+            Action<TFrom, TTo> copyFrom = (from, to) =>
+            {
+                var item = fromSource()
+                    .First(fs => objectAccessor(fs).Equals(toAccessor(to)));
+                fromSetter(from, item);
+            };
+            Action<TFrom, TTo> copyTo = (from, to) =>
+            {
+                toSetter(to, objectAccessor(fromAccessor(from)));
+            };
+
+            _CopyFromGraphs.Add(copyFrom);
+            _CopyToGraphs.Add(copyTo);
+
+            return this;
+        }
+
+        public ITypeMapper<TFrom, TTo> RegisterAction(Action<TFrom, TTo> fromAction, Action<TFrom, TTo> toAction)
+        {
+            _CopyFromGraphs.Add(fromAction);
+            _CopyToGraphs.Add(toAction);
+
+            return this;
+        }
+
+        public ITypeMapper<TFrom, TTo> RegisterFromPivot(Action<IPivotFactory<TFrom, TTo>> config) 
+        {
+            config(new PivotFactory<TFrom, TTo>()
+                {
+                    FinishAction = mp =>
+                        {
+                            _CopyFromGraphs.Add(mp.From);
+                            _CopyToGraphs.Add(mp.To);
+                        }
+                });
+
+            return this;
+        }
+
+        public ITypeMapper<TFrom, TTo> RegisterToPivot(Action<IPivotFactory<TTo, TFrom>> config)
+        {
+            config(new PivotFactory<TTo, TFrom>()
+            {
+                FinishAction = mp =>
+                {
+                    _CopyFromGraphs.Add((f, t) => mp.To(t, f));
+                    _CopyToGraphs.Add((f, t) => mp.From(t, f));
+                }
+            });
+
+            return this;
+        }
+
         public ITypeMapper<TFrom, TTo> ImplyAll()
         {
             return ImplyAll(new HashSet<string>());
@@ -397,6 +510,64 @@ namespace Nieko.Infrastructure.ComponentModel
             foreach (var graphAction in _CopyToGraphs)
             {
                 graphAction(from, to);
+            }
+        }
+
+        public void From(IEnumerable<TFrom> from, IEnumerable<TTo> to)
+        {
+            var fromEnumerator = from.GetEnumerator();
+            var toEnumerator = to.GetEnumerator();
+
+            while (true)
+            {
+                if(!(fromEnumerator.MoveNext() && toEnumerator.MoveNext()))
+                {
+                    return;
+                }
+
+                From(fromEnumerator.Current, toEnumerator.Current);
+            }
+        }
+
+        public void To(IEnumerable<TFrom> from, IEnumerable<TTo> to)
+        {
+            var fromEnumerator = from.GetEnumerator();
+            var toEnumerator = to.GetEnumerator();
+
+            while (true)
+            {
+                if (!(fromEnumerator.MoveNext() && toEnumerator.MoveNext()))
+                {
+                    return;
+                }
+
+                To(fromEnumerator.Current, toEnumerator.Current);
+            }
+        }
+
+        public void NewFrom<TNewFrom>(ICollection<TNewFrom> from, IEnumerable<TTo> to)
+            where TNewFrom : TFrom, new()
+        {
+            TNewFrom destination;
+
+            foreach(var source in to)
+            {
+                destination = new TNewFrom();
+                From(destination, source);
+                from.Add(destination);
+            }
+        }
+
+        public void NewTo<TNewTo>(IEnumerable<TFrom> from, ICollection<TNewTo> to)
+            where TNewTo : TTo, new()
+        {
+            TNewTo destination;
+
+            foreach (var source in from)
+            {
+                destination = new TNewTo();
+                To(source, destination);
+                to.Add(destination);
             }
         }
     }

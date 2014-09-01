@@ -10,13 +10,13 @@ using Nieko.Infrastructure.Windows.Data;
 namespace Nieko.Infrastructure.Navigation.RecordNavigation
 {
     /// <summary>
-    /// Responsible for all of a tier's Data Navigation components
+    /// Responsible for co-ordinating a data tier
     /// </summary>
     /// <remarks>
-    /// Holds and coordinates Data Navigation components for a tier of the graph and 
+    /// Holds and coordinates Navigation and Persistence components for a tier of the graph and 
     /// relationships between parent and child Navigation Owners 
     /// </remarks>
-    public interface IDataNavigatorOwner : INotifyDisposing, INotifyPropertyChanged 
+    public interface ITierCoordinator : INotifyDisposing, INotifyPropertyChanged 
     {
         /// <summary>
         /// Raised when the collection of Model View items at this level changes
@@ -33,6 +33,10 @@ namespace Nieko.Infrastructure.Navigation.RecordNavigation
         /// </summary>
         bool AllowEdit { get; }
         /// <summary>
+        /// Returns the common type (if any) of items in the <seealso cref="PersistedView"/>
+        /// </summary>
+        Type ItemType { get; }
+        /// <summary>
         /// Persistence for this tier
         /// </summary>
         IPersistedView PersistedView { get; }
@@ -43,7 +47,7 @@ namespace Nieko.Infrastructure.Navigation.RecordNavigation
         /// <summary>
         /// Owner of the next higher tier
         /// </summary>
-        IDataNavigatorOwner Parent { get; }
+        ITierCoordinator Parent { get; }
         /// <summary>
         /// Parent - Child hierarchy for this level
         /// </summary>

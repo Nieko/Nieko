@@ -10,7 +10,7 @@ using Nieko.Infrastructure.Logging;
 namespace Nieko.Infrastructure.Reflection
 {
     /// <summary>
-    /// Default implementation of <seealso cref="IPluginFinder "/>
+    /// Default implementation of <see cref="IPluginFinder "/>
     /// Plug-in type discovery and instantiation is via AssemblyHelper.FindTypes
     /// (i.e. reflection)
     /// </summary>
@@ -30,7 +30,7 @@ namespace Nieko.Infrastructure.Reflection
         /// Constructor
         /// </summary>
         /// <param name="plugInFactory">Builds plug-in factory from a type</param>
-        /// <param name="eventAggregator">Aggregator for publishing plug-in start-up events and subscribing to <seealso cref="IInitializePluginFrameworkEvent"/></param>
+        /// <param name="eventAggregator">Aggregator for publishing plug-in start-up events and subscribing to <see cref="IInitializePluginFrameworkEvent"/></param>
         public PluginFinder(Func<Type, IPlugInFactory> plugInFactory, IInfrastructureEventAggregator eventAggregator)
         {
             AppIsInitialised = false;
@@ -163,7 +163,7 @@ namespace Nieko.Infrastructure.Reflection
         }
 
         /// <summary>
-        /// Called when <seealso cref="IInitializePluginFrameworkEvent"/> raised at
+        /// Called when <see cref="IInitializePluginFrameworkEvent"/> raised at
         /// application start-up, indicating that the IPluginFinder can begin resolving
         /// registered call-backs
         /// </summary>

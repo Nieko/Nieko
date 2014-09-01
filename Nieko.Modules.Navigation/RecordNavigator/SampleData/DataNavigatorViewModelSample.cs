@@ -65,6 +65,11 @@ namespace Nieko.Modules.Navigation.RecordNavigator
             get { return null; }
         }
 
+        public ICommand ChangeSearchFilter
+        {
+            get { return null; }
+        }
+
         public Visibility CancelVisible
         {
             get
@@ -313,7 +318,7 @@ namespace Nieko.Modules.Navigation.RecordNavigator
             }
         }
 
-        public IDataNavigatorOwner Owner
+        public ITierCoordinator Owner
         {
             get
             {
@@ -328,6 +333,11 @@ namespace Nieko.Modules.Navigation.RecordNavigator
         public EditState EditState
         {
             get { return EditState.View; }
+        }
+
+        public DataNavigatorViewModelSample()
+        {
+            RecordSearch = new RecordSearchViewModelDesign(this).Search;
         }
 
         public void Navigate(RecordNavigation navigation)
@@ -358,6 +368,8 @@ namespace Nieko.Modules.Navigation.RecordNavigator
         {
             Disposing(this, EventArgs.Empty); 
         }
+
+        public IRecordSearch RecordSearch { get; set; }
     }
 }
 #endif

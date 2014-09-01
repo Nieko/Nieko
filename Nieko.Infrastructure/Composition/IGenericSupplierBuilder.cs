@@ -7,7 +7,7 @@ namespace Nieko.Infrastructure.Composition
 {
     /// <summary>
     /// Provides a delayed resolution of a type.
-    /// /// </summary>
+    /// </summary>
     /// <remarks>
     /// Particularly useful in breaking circular
     /// dependencies between classes or in ensuring

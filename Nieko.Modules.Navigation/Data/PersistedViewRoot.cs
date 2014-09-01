@@ -63,9 +63,13 @@ namespace Nieko.Modules.Navigation.Data
             }
         }
 
-        public IViewNavigator RegionNavigator { get; private set; }
+        public IViewNavigator ViewNavigator { get; private set; }
+
+        public bool IsReadOnly { get { return false; } }
 
         public bool IsEditing { get; private set; }
+
+        public bool SuppressNotifications { get; set; }
 
         public bool HasChanged { get; set; }
 
@@ -79,11 +83,11 @@ namespace Nieko.Modules.Navigation.Data
 
         public PrimaryKey SourceKey { get; set; }
 
-        public PersistedViewRoot(Func<IDataNavigatorOwnerBuilder> builderFactory, IDataStoresManager dataStoresManager, IViewNavigator regionNavigator, LoadProcessStarter processStarter)
+        public PersistedViewRoot(Func<ITierCoordinatorBuilder> builderFactory, IDataStoresManager dataStoresManager, IViewNavigator regionNavigator, LoadProcessStarter processStarter)
             : base(builderFactory, dataStoresManager, regionNavigator, processStarter)
         {
             SourceKey = new PrimaryKey(this);
-            RegionNavigator = regionNavigator;
+            ViewNavigator = regionNavigator;
 
             Instance = this;
         }

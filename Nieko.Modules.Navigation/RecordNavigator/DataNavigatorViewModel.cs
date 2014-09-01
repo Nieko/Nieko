@@ -12,6 +12,7 @@ using Nieko.Infrastructure.ComponentModel;
 using Nieko.Infrastructure.Navigation.RecordNavigation;
 using Nieko.Infrastructure.Navigation;
 using Nieko.Infrastructure.Windows;
+using Nieko.Infrastructure.Collections;
 
 namespace Nieko.Modules.Navigation.RecordNavigator
 {
@@ -21,11 +22,11 @@ namespace Nieko.Modules.Navigation.RecordNavigator
         private static List<RecordNavigation> _NavigationTypes;
 
         private Dictionary<EditState, ICommand> _EditStateCommands;
-        private ObservableCollection<EditState> _EditStatesEnabled;
-        private ObservableCollection<EditState> _EditStatesVisible;
+        private ObservableRangeCollection<EditState> _EditStatesEnabled;
+        private ObservableRangeCollection<EditState> _EditStatesVisible;
         private Dictionary<RecordNavigation, ICommand> _NavigationCommands;
-        private ObservableCollection<RecordNavigation> _NavigationsEnabled;
-        private ObservableCollection<RecordNavigation> _NavigationsVisible;
+        private ObservableRangeCollection<RecordNavigation> _NavigationsEnabled;
+        private ObservableRangeCollection<RecordNavigation> _NavigationsVisible;
         private bool _ShowNavigators;
         private INavigatorVisibilityProvider _VisibilityProvider;
         private IWeakEventRouter _VisibilityProviderRouter;
@@ -156,6 +157,8 @@ namespace Nieko.Modules.Navigation.RecordNavigator
             }
         }
 
+        public ICommand ChangeSearchFilter { get; private set; }
+        
         public Visibility CancelVisible
         {
             get 
@@ -329,7 +332,7 @@ namespace Nieko.Modules.Navigation.RecordNavigator
             {
                 if (_EditStatesEnabled == null)
                 {
-                    _EditStatesEnabled = new ObservableCollection<EditState>();
+                    _EditStatesEnabled = new ObservableRangeCollection<EditState>();
                 }
                 return _EditStatesEnabled;
             }
@@ -341,7 +344,7 @@ namespace Nieko.Modules.Navigation.RecordNavigator
             {
                 if (_EditStatesVisible == null)
                 {
-                    _EditStatesVisible = new ObservableCollection<EditState>();
+                    _EditStatesVisible = new ObservableRangeCollection<EditState>();
                     UpdateVisibleEditStates();
                 }
                 return _EditStatesVisible;
@@ -377,7 +380,7 @@ namespace Nieko.Modules.Navigation.RecordNavigator
             {
                 if (_NavigationsEnabled == null)
                 {
-                    _NavigationsEnabled = new ObservableCollection<RecordNavigation>();
+                    _NavigationsEnabled = new ObservableRangeCollection<RecordNavigation>();
                 }
                 return _NavigationsEnabled;
             }
@@ -389,7 +392,7 @@ namespace Nieko.Modules.Navigation.RecordNavigator
             {
                 if (_NavigationsVisible == null)
                 {
-                    _NavigationsVisible = new ObservableCollection<RecordNavigation>();
+                    _NavigationsVisible = new ObservableRangeCollection<RecordNavigation>();
                     UpdateVisibleNavigationStates();
                 }
                 return _NavigationsVisible;
@@ -453,6 +456,8 @@ namespace Nieko.Modules.Navigation.RecordNavigator
             ShowNavigators = true;
             NavigationsVisible.CollectionChanged += NavigationsVisible_CollectionChanged;
             EditStatesVisible.CollectionChanged += EditStatesVisible_CollectionChanged;
+
+            ChangeSearchFilter = new RelayCommand(ShowSearchFilterControl);
         }
 
         protected override void DisposeImpl()
@@ -600,21 +605,21 @@ namespace Nieko.Modules.Navigation.RecordNavigator
 
         private void EditStatesVisible_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+            UpdateNewVisible();
+            UpdateEditVisible();
+            UpdateSaveVisible();
+            UpdateCancelVisible();
+            UpdateDeleteVisible();
+        }
+
+        private void NavigationsVisible_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
             UpdateFirstVisible();
             UpdatePreviousVisible();
             UpdateNextVisible();
             UpdateLastVisible();
             UpdateGoToPositionVisible();
             UpdateCountVisible();
-        }
-
-        private void NavigationsVisible_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            UpdateNewVisible();
-            UpdateEditVisible();
-            UpdateSaveVisible();
-            UpdateCancelVisible();
-            UpdateDeleteVisible();
         }
 
         private void OnVisibilityProviderPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -635,6 +640,16 @@ namespace Nieko.Modules.Navigation.RecordNavigator
             {
                 UpdateVisibleNavigationStates();
             }
+        }
+
+        private void ShowSearchFilterControl()
+        {
+            var control = new RecordSearchControl();
+            var viewModel = new RecordSearchViewModel((RecordSearch)this.RecordSearch, this, () => { control.Close(); });
+            viewModel.Initialize();
+
+            control.DataContext = viewModel;
+            control.ShowDialog();
         }
 
         private void UpdateCancelVisible()
@@ -761,18 +776,12 @@ namespace Nieko.Modules.Navigation.RecordNavigator
 
             if (VisibilityProvider == null || VisibilityProvider.ShowAllEditStates)
             {
-                foreach (var state in EditStateTypes)
-                {
-                    EditStatesVisible.Add(state);
-                }
+                _EditStatesVisible.AddRange(EditStateTypes);
 
                 return;
             }
 
-            foreach (var state in VisibilityProvider.VisibleEditStates)
-            {
-                EditStatesVisible.Add(state);
-            }
+            _EditStatesVisible.AddRange(VisibilityProvider.VisibleEditStates);
         }
 
         private void UpdateVisibleNavigationStates()
@@ -785,22 +794,12 @@ namespace Nieko.Modules.Navigation.RecordNavigator
 
             if (VisibilityProvider == null || VisibilityProvider.ShowAllNavigationStates)
             {
-                foreach (var navigationType in NavigationTypes)
-                {
-                    if (navigationType == RecordNavigation.None)
-                    {
-                        continue;
-                    }
-                    NavigationsVisible.Add(navigationType);
-                }
+                _NavigationsVisible.AddRange(NavigationTypes);
 
                 return;
             }
-
-            foreach (var navigationType in VisibilityProvider.VisibleNavigationStates)
-            {
-                NavigationsVisible.Add(navigationType);
-            }
+            
+            _NavigationsVisible.AddRange(VisibilityProvider.VisibleNavigationStates);
         }
     }
 }

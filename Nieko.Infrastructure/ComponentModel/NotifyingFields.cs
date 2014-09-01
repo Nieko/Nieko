@@ -10,12 +10,13 @@ namespace Nieko.Infrastructure.ComponentModel
 {
     public class NotifyingFields
     {
+        private static object _Lock = new object();
         private bool _IsDisposed = false;
         private Action<string> _RaisePropertyChanged;
         private readonly INotifyPropertyChanged _Owner;
 
         protected Dictionary<string, object> FieldValues { get; private set;}
-        protected Dictionary<Type, object> FieldComparers { get; private set;}
+        protected static Dictionary<Type, object> FieldComparers { get; private set; }
 
         public virtual T Get<T>(Expression<Func<T>> propertyExpression)
         {
@@ -90,7 +91,6 @@ namespace Nieko.Infrastructure.ComponentModel
             var copy = new NotifyingFields(_Owner, _RaisePropertyChanged);
 
             copy.FieldValues = new Dictionary<string, object>(FieldValues);
-            copy.FieldComparers = new Dictionary<Type, object>(FieldComparers);
 
             return copy;
         }
@@ -109,7 +109,6 @@ namespace Nieko.Infrastructure.ComponentModel
         public NotifyingFields(INotifyPropertyChanged owner, Action<string> raisePropertyChanged)
         {
             FieldValues = new Dictionary<string, object>();
-            FieldComparers = new Dictionary<Type, object>();
 
             _Owner = owner;
 
@@ -131,6 +130,11 @@ namespace Nieko.Infrastructure.ComponentModel
 
                 (_Owner as INotifyDisposing).Disposing += ownerDispose;
             }
+        }
+
+        static NotifyingFields()
+        {
+            FieldComparers = new Dictionary<Type, object>();
         }
 
         public IEnumerable<string> GetDifferences(NotifyingFields other)
@@ -171,21 +175,24 @@ namespace Nieko.Infrastructure.ComponentModel
             object compiledComparer;
             Func<T, T, bool> comparer;
 
-            if (!FieldComparers.TryGetValue(typeof(T), out compiledComparer))
+            lock (_Lock)
             {
-                var left = System.Linq.Expressions.Expression.Parameter(typeof(T), "x");
-                var right = System.Linq.Expressions.Expression.Parameter(typeof(T), "y");
+                if (!FieldComparers.TryGetValue(typeof(T), out compiledComparer))
+                {
+                    var left = System.Linq.Expressions.Expression.Parameter(typeof(T), "x");
+                    var right = System.Linq.Expressions.Expression.Parameter(typeof(T), "y");
 
-                comparer = System.Linq.Expressions.Expression.Lambda<Func<T, T, bool>>(
-                    System.Linq.Expressions.Expression.Equal(left, right),
-                    left,
-                    right).Compile();
+                    comparer = System.Linq.Expressions.Expression.Lambda<Func<T, T, bool>>(
+                        System.Linq.Expressions.Expression.Equal(left, right),
+                        left,
+                        right).Compile();
 
-                FieldComparers.Add(typeof(T), comparer);
-            }
-            else
-            {
-                comparer = (Func<T, T, bool>)compiledComparer;
+                    FieldComparers.Add(typeof(T), comparer);
+                }
+                else
+                {
+                    comparer = (Func<T, T, bool>)compiledComparer;
+                }
             }
 
             return comparer;

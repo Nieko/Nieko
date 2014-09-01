@@ -13,7 +13,7 @@ namespace Nieko.Modules.Navigation
 {
     public class MenuBarManager : NotifyPropertyChangedBase, IMenuBarManager
     {
-        private IViewNavigator _RegionNavigator;
+        private IViewNavigator _ViewNavigator;
         private Dictionary<EndPoint, Stack<Action>> _CleanupsByOwner;
         private IWeakEventRouter _NavigatingRouter;
 
@@ -31,18 +31,20 @@ namespace Nieko.Modules.Navigation
 
         public Menu MenuBar { get; set; }
 
-        public MenuBarManager(IViewNavigator regionNavigator)
+        public MenuBarManager(IViewNavigator viewNavigator)
         {
-            _RegionNavigator = regionNavigator;
+            _ViewNavigator = viewNavigator;
 
             _NavigatingRouter = WeakEventRouter.CreateInstance(this,
-                regionNavigator,
+                viewNavigator,
                 () => default(NavigationEventArgs), 
                 (o, d) =>  o.Navigating += d.Handler,
                 (o, d) => o.Navigating -= d.Handler,
                 Navigating);
 
             _CleanupsByOwner = new Dictionary<EndPoint, Stack<Action>>();
+
+            _ViewNavigator.EnqueueUIWork(() => MenuBar = new Menu());
         }
 
         private ICommand Create(string path, Action<MenuItem> initialization, EndPoint owner, Func<ICommand> commandFactory)

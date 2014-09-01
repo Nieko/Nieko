@@ -29,8 +29,8 @@ namespace Nieko.Modules.Navigation.EndPoints
             }
         }
 
-        public Root(IGenericSupplierBuilder supplierBuilder, IApplicationDetails appDetails)
-            : base(supplierBuilder)
+        public Root(IViewModelFormFactory factory, IApplicationDetails appDetails)
+            : base(factory)
         {
             _StartupForm = appDetails.StartupForm;
         }

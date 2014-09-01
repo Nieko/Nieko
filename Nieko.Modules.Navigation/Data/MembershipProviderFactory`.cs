@@ -15,10 +15,10 @@ namespace Nieko.Modules.Navigation.Data
         where TDataStore : class, IDataStore
     {
         private IPersistedView _Owner;
-        private Func<IDataNavigatorOwnerBuilder> _Builder;
+        private Func<ITierCoordinatorBuilder> _Builder;
         private IDataStoresManager _DataStoresManager;
 
-        public MembershipProviderFactory(IPersistedView owner, Func<IDataNavigatorOwnerBuilder> builder, IDataStoresManager dataStoresManager)
+        public MembershipProviderFactory(IPersistedView owner, Func<ITierCoordinatorBuilder> builder, IDataStoresManager dataStoresManager)
         {
             _Owner = owner;
             _Builder = builder;
@@ -39,10 +39,10 @@ namespace Nieko.Modules.Navigation.Data
     {
         private IPersistedView _Owner;
         private Expression<Func<TParentEntity, ICollection<TEntity>>> _Relationship;
-        private Func<IDataNavigatorOwnerBuilder> _Builder;
+        private Func<ITierCoordinatorBuilder> _Builder;
         private IDataStoresManager _DataStoresManager;
 
-        public MembershipProviderFactory(IPersistedView owner, Func<IDataNavigatorOwnerBuilder> builder, IDataStoresManager dataStoresManager)
+        public MembershipProviderFactory(IPersistedView owner, Func<ITierCoordinatorBuilder> builder, IDataStoresManager dataStoresManager)
         {
             _Owner = owner;
             _Builder = builder;
@@ -80,7 +80,7 @@ namespace Nieko.Modules.Navigation.Data
     {
         private IPersistedView _Owner;
         private Expression<Func<TParentEntity, ICollection<TEntity>>> _Relationship;
-        private Func<IDataNavigatorOwnerBuilder> _Builder;
+        private Func<ITierCoordinatorBuilder> _Builder;
         private IDataStoresManager _DataStoresManager;
         private Action<ITypeMapper<T, TEntity>> _TypeMapperInitializer;
 
@@ -90,7 +90,7 @@ namespace Nieko.Modules.Navigation.Data
 
             internal Expression<Func<TParentEntity, ICollection<TEntity>>> RelationshipInstance { get; set; }
 
-            internal ConstructedMembershipProvider(Func<IDataNavigatorOwnerBuilder> builderFactory, IDataStoresManager dataStoresManager, IPersistedView owner, ITypeMapper<T, TEntity> typeMapper)
+            internal ConstructedMembershipProvider(Func<ITierCoordinatorBuilder> builderFactory, IDataStoresManager dataStoresManager, IPersistedView owner, ITypeMapper<T, TEntity> typeMapper)
                 : base(builderFactory, dataStoresManager, owner) 
             {
                 _TypeMapper = typeMapper;
@@ -113,7 +113,7 @@ namespace Nieko.Modules.Navigation.Data
             }
         }
 
-        public MembershipProviderFactory(IPersistedView owner, Expression<Func<TParentEntity, ICollection<TEntity>>> relationship, Func<IDataNavigatorOwnerBuilder> builder, IDataStoresManager dataStoresManager, Action<ITypeMapper<T, TEntity>> initializer)
+        public MembershipProviderFactory(IPersistedView owner, Expression<Func<TParentEntity, ICollection<TEntity>>> relationship, Func<ITierCoordinatorBuilder> builder, IDataStoresManager dataStoresManager, Action<ITypeMapper<T, TEntity>> initializer)
         {
             _Owner = owner;
             _Relationship = relationship;

@@ -15,11 +15,12 @@ namespace Nieko.Infrastructure.ViewModel
     /// Base class for a Mirror of a Entity data implementing functionality required
     /// for use as a ModelView with change commit and rollback.
     /// </summary>
-    public abstract class EditableViewModel : IEditableMirrorObject, INotifyPropertyChanged, IEquatable<EditableViewModel>, IDataErrorInfo
+    public abstract class EditableViewModel : IEditableDataErrorInfoMirror, INotifyPropertyChanged, IEquatable<EditableViewModel>
     {
         private NotifyingFields _Fields;
         private NotifyingFields _OldFields;
         private IWeakEventRouter _PropertyChangedRouter;
+        private PrimaryKey _SourceKey;
 
         [XmlIgnore]
         public IDictionary<string, IList<Func<string>>> ValidationByColumnName { get; private set; }
@@ -34,6 +35,12 @@ namespace Nieko.Infrastructure.ViewModel
 
         private void SetImpl<T>(Expression<Func<T>> propertyExpression, T value, Action valueUpdated)
         {
+            if(SuppressNotifications)
+            {
+                _Fields.SetDefault(propertyExpression, value);
+                return;
+            }
+
             if (IsEditing)
             {
                 _Fields.Set(propertyExpression, value, valueUpdated);
@@ -77,7 +84,25 @@ namespace Nieko.Infrastructure.ViewModel
         public event PropertyChangedEventHandler PropertyChanged;
 
         [XmlIgnore]
-        public PrimaryKey SourceKey { get; set; }
+        public PrimaryKey SourceKey
+        {
+            get
+            {
+                return _SourceKey;
+            }
+            set
+            {
+                if (_SourceKey == value)
+                {
+                    return;
+                }
+                _SourceKey = value;
+                if(_SourceKey != null)
+                {
+                    _SourceKey.TouchKeys(); 
+                }
+            }
+        }
 
         [XmlIgnore]
         public virtual bool IsReadOnly
@@ -92,11 +117,15 @@ namespace Nieko.Infrastructure.ViewModel
         public bool IsEditing { get; private set; }
 
         [XmlIgnore]
+        public bool SuppressNotifications { get; set; }
+
+        [XmlIgnore]
         public bool HasChanged { get; set; }
 
         public EditableViewModel()
         {
             _Fields = new NotifyingFields(this, () => PropertyChanged);
+            ValidationByColumnName = new Dictionary<string, IList<Func<string>>>();
             InitializeValidation();
             CurrentErrors = new Dictionary<string, string>();
 
@@ -219,10 +248,15 @@ namespace Nieko.Infrastructure.ViewModel
             AddValidation(BindingHelper.Name(property), validation);
         }
 
-        protected virtual void InitializeValidation()
+        public void RecheckForErrors()
         {
-            ValidationByColumnName = new Dictionary<string, IList<Func<string>>>();
+            foreach(var propertyName in ValidationByColumnName.Keys)
+            {
+                UpdateErrors(propertyName);
+            }
         }
+
+        protected virtual void InitializeValidation() { }
 
         protected virtual void UpdateErrors(string propertyName)
         {
@@ -243,10 +277,13 @@ namespace Nieko.Infrastructure.ViewModel
             if (error == null && CurrentErrors.ContainsKey(propertyName))
             {
                 CurrentErrors.Remove(propertyName);
+                RaisePropertyChanged(() => Error);
+
                 return;
             }
 
             CurrentErrors[propertyName] = error;
+            RaisePropertyChanged(() => Error);
         }
 
         public virtual string Error

@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using Nieko.Infrastructure.Collections;
 using System.Linq.Expressions;
+using System.ComponentModel.DataAnnotations;
 
 namespace Nieko.Infrastructure.Data
 {
@@ -36,6 +37,8 @@ namespace Nieko.Infrastructure.Data
         private Type _EntityType;
         private bool _HasToString = false;
         private string _ToString = "";
+        private bool _HasHash = false;
+        private int _Hash = 0;
         private Func<string> _ToStringFunction;
         private IList<string> _OrderedKeys;
 
@@ -145,6 +148,7 @@ namespace Nieko.Infrastructure.Data
                 }
                 base[key] = value;
                 _HasToString = false;
+                _HasHash = false;
             }
         }
 
@@ -166,6 +170,38 @@ namespace Nieko.Infrastructure.Data
             return key;
         }
 
+        public static PrimaryKey CreateKey<T>(params object[] keys)
+            where T : IPrimaryKeyed, new()
+        {
+            var key = GetBlankKey<T>();
+            
+            for(int i =0;i<keys.Length;i++ )
+            {
+                key[key.OrderedKeys[i]] = keys[i];
+            }
+
+            return key;
+        }
+
+        /// <summary>
+        /// Builds a key from an object and a set of property expressions of that object
+        /// </summary>
+        /// <typeparam name="T">Type of object holding properties to create the key from</typeparam>
+        /// <param name="keyed">Object that holds the key properties</param>
+        /// <param name="properties">Property expressions to build the key from</param>
+        /// <returns>Fabricated Primary Key</returns>
+        public static PrimaryKey CreateKey<T>(T keyed, params Expression<Func<T, object>>[] properties)
+        {
+            var key = new PrimaryKey();
+
+            foreach(var property in properties)
+            {
+                key[BindingHelper.Name(property)] = property.Compile()(keyed);
+            }
+
+            return key;
+        }
+
         /// <summary>
         /// Get key property accessors for a keyed type
         /// </summary>
@@ -179,9 +215,18 @@ namespace Nieko.Infrastructure.Data
             {
                 Expression<Func<object, object>> accessor;
                 ParameterExpression param = Expression.Parameter(typeof(object), "o");
+                Type definingType;
+                if(Attribute.IsDefined(type, typeof(MetadataTypeAttribute)))
+                {
+                    definingType = (Attribute.GetCustomAttribute(type, typeof(MetadataTypeAttribute)) as MetadataTypeAttribute).MetadataClassType;
+                }
+                else
+                {
+                    definingType = type;
+                }
 
                 keyProperties = new Dictionary<string, Func<object, object>>();
-                foreach (PropertyInfo property in type.GetProperties
+                foreach (PropertyInfo property in definingType.GetProperties
                     (BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance).Where(
                         p=> Attribute.GetCustomAttribute(p, typeof(PrimaryKeyAttribute)) != null))
                 {
@@ -205,6 +250,33 @@ namespace Nieko.Infrastructure.Data
             return keyProperties;
         }
 
+        public static int CompareKeyed(object left, object right)
+        {
+            var leftKey = ((left is IPrimaryKeyed) ?
+                (left as IPrimaryKeyed).PrimaryKey :
+                null);
+            var rightKey = ((right is IPrimaryKeyed) ?
+                (right as IPrimaryKeyed).PrimaryKey :
+                null);
+
+            if(leftKey == null && rightKey == null)
+            {
+                return 0;
+            }
+
+            if(leftKey == null && rightKey != null)
+            {
+                return -1;
+            }
+
+            if (leftKey != null && rightKey == null)
+            {
+                return 1;
+            }
+
+            return leftKey.CompareTo(rightKey);
+        }
+
         /// <summary>
         /// Adds a key property and value. If PrimaryKey is associated with an actual object
         /// then an InvalidOperationException is raised
@@ -220,6 +292,7 @@ namespace Nieko.Infrastructure.Data
             }
             base.Add(key, value);
             _HasToString = false;
+            _HasHash = false;
         }
 
         /// <summary>
@@ -235,6 +308,7 @@ namespace Nieko.Infrastructure.Data
             }
             base.Clear();
             _HasToString = false;
+            _HasHash = false;
         }
 
         /// <summary>
@@ -251,28 +325,28 @@ namespace Nieko.Infrastructure.Data
         {
             try
             {
-                IEnumerator<KeyValuePair<string, object>> oSubjectEnum;
-                IEnumerator<KeyValuePair<string, object>> oObjectEnum;
+                IEnumerator<string> oSubjectEnum;
+                IEnumerator<string> oObjectEnum;
                 PrimaryKey toKey = (PrimaryKey)other;
                 int iResult;
 
-                oSubjectEnum = this.GetEnumerator();
-                oObjectEnum = toKey.GetEnumerator();
+                oSubjectEnum = this._OrderedKeys.GetEnumerator();
+                oObjectEnum = toKey._OrderedKeys.GetEnumerator();
 
                 while (oSubjectEnum.MoveNext())
                 {
                     oObjectEnum.MoveNext();
-                    if (oSubjectEnum.Current.Value is IPrimaryKeyed)
+                    if (this[oSubjectEnum.Current] is IPrimaryKeyed)
                     {
-                        iResult = (oSubjectEnum.Current.Value as IPrimaryKeyed).CompareTo(oObjectEnum.Current.Value); 
+                        iResult = (this[oSubjectEnum.Current] as IPrimaryKeyed).CompareTo(other[oObjectEnum.Current]); 
                     }
-                    else if (oObjectEnum.Current.Value is IPrimaryKeyed)
+                    else if (other[oObjectEnum.Current] is IPrimaryKeyed)
                     {
-                        iResult = (oObjectEnum.Current.Value as IPrimaryKeyed).CompareTo(oSubjectEnum.Current.Value);
+                        iResult = (other[oObjectEnum.Current] as IPrimaryKeyed).CompareTo(this[oSubjectEnum.Current]);
                     }
                     else
                     {
-                        iResult = _Comparer.Compare(oSubjectEnum.Current.Value, oObjectEnum.Current.Value);
+                        iResult = _Comparer.Compare(this[oSubjectEnum.Current], other[oObjectEnum.Current]);
                     }
 
                     if (iResult == 0)
@@ -291,14 +365,20 @@ namespace Nieko.Infrastructure.Data
 
         public override int GetHashCode()
         {
-            int hash = 13;
+            if(_HasHash)
+            {
+                return _Hash;
+            }
+
+            _Hash = 13;
 
             foreach (var key in OrderedKeys)
             {
-                hash = (hash * 7) + (this[key] ?? 0).GetHashCode();
+                _Hash = (_Hash * 7) + (this[key] ?? 0).GetHashCode();
             }
 
-            return hash;
+            _HasHash = true;
+            return _Hash;
         }
 
         public bool Equals(PrimaryKey other)
@@ -330,6 +410,7 @@ namespace Nieko.Infrastructure.Data
             }
             base.Remove(key);
             _HasToString = false;
+            _HasHash = false;
         }
 
         public object[] ToArray()
@@ -393,6 +474,22 @@ namespace Nieko.Infrastructure.Data
             return provider.ToFilterExpression<T>(this); 
         }
 
+        public void TouchKeys()
+        {
+            object dummy;
+            IPrimaryKeyed keyedReference;
+
+            foreach(var key in Values)
+            {
+                dummy = key;
+                keyedReference = dummy as IPrimaryKeyed;
+                if(keyedReference != null)
+                {
+                    keyedReference.PrimaryKey.TouchKeys();
+                }
+            }
+        }
+
         private string DefaultToString()
         {
             string toString = "";
@@ -432,6 +529,7 @@ namespace Nieko.Infrastructure.Data
 
             base[e.PropertyName] = keyProperties[e.PropertyName].Invoke(sender);
             _HasToString = false;
+            _HasHash = false;
         }
 
         new bool Equals(object obj)

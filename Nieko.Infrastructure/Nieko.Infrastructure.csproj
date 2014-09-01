@@ -37,7 +37,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -48,6 +48,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug Release Con|AnyCPU'">
     <OutputPath>bin\Debug Release Con\</OutputPath>
@@ -83,19 +84,25 @@
     <Compile Include="Collections\BinarySearchExtensions.cs" />
     <Compile Include="Collections\DescendedDateComparer.cs" />
     <Compile Include="Collections\HashSetExtensions.cs" />
+    <Compile Include="Collections\ObservableRangeCollection`.cs" />
     <Compile Include="Collections\ReadOnlyDictionary`.cs" />
     <Compile Include="Collections\ReadOnlyDictionary``.cs" />
+    <Compile Include="ComponentModel\CachedTypeMapper.cs" />
+    <Compile Include="ComponentModel\CollectionBackedFields.cs" />
     <Compile Include="ComponentModel\EndPointContextSerializerAttribute.cs" />
     <Compile Include="ComponentModel\EndPointFactory.cs" />
     <Compile Include="ComponentModel\EndPointInitialization.cs" />
     <Compile Include="ComponentModel\EndPointProvider`.cs" />
     <Compile Include="ComponentModel\EndPoint.cs" />
     <Compile Include="ComponentModel\ExistingEndPointFactory.cs" />
+    <Compile Include="ComponentModel\IEditableDataErrorInfoMirror.cs" />
     <Compile Include="ComponentModel\IEditableMirrorObject.cs" />
     <Compile Include="ComponentModel\IEndPointContextSerializer.cs" />
     <Compile Include="ComponentModel\IEndPointFactory.cs" />
     <Compile Include="ComponentModel\IEndPointProvider.cs" />
     <Compile Include="ComponentModel\IEndPointValidation.cs" />
+    <Compile Include="ComponentModel\IMapperPivot.cs" />
+    <Compile Include="ComponentModel\IPivotFactory``.cs" />
     <Compile Include="ComponentModel\ITypeMapper.cs" />
     <Compile Include="ComponentModel\ITypeMapperFromOnlyFactory.cs" />
     <Compile Include="ComponentModel\ITypeMapperToOnlyFactory.cs" />
@@ -104,6 +111,7 @@
     <Compile Include="ComponentModel\NotifyingFields.cs" />
     <Compile Include="Collections\ObservableDictionary.cs" />
     <Compile Include="ComponentModel\NotifyPropertyChangedBase.cs" />
+    <Compile Include="ComponentModel\PivotFactory.cs" />
     <Compile Include="ComponentModel\TypeMapper``.cs" />
     <Compile Include="ComponentModel\TypeMapper.cs" />
     <Compile Include="ComponentModel\TypeMapperFromOnlyFactory.cs" />
@@ -162,7 +170,8 @@
     <Compile Include="EventAggregation\IPluginsLoadedEvent.cs" />
     <Compile Include="EventAggregation\IPopupChangedEvent.cs" />
     <Compile Include="EventAggregation\IInitialActionRequestEvent.cs" />
-    <Compile Include="EventAggregation\IStartupNoficationsRequestEvent.cs" />
+    <Compile Include="EventAggregation\IStartupNotificationsProcessedEvent.cs" />
+    <Compile Include="EventAggregation\IStartupNotificationsRequestEvent.cs" />
     <Compile Include="EventAggregation\StartupNotification.cs" />
     <Compile Include="Export\CompositeExport.cs" />
     <Compile Include="Export\CompositeExportItem.cs" />
@@ -194,6 +203,7 @@
     <Compile Include="Navigation\Menus\NavigationEventArgs.cs" />
     <Compile Include="Navigation\NavigationEventArgs.cs" />
     <Compile Include="Navigation\NavigationRequest.cs" />
+    <Compile Include="TypeExtensions.cs" />
     <Compile Include="Reflection\EntityTypeExtensions.cs" />
     <Compile Include="Reflection\IPlugInFactory.cs" />
     <Compile Include="Reflection\IPluginFinder.cs" />
@@ -216,13 +226,13 @@
     <Compile Include="Security\RoleExpression.cs" />
     <Compile Include="Security\RolesProviderBase.cs" />
     <Compile Include="Security\SystemRoles.cs" />
+    <Compile Include="Threading\VirtualCollectionCopy.cs" />
     <Compile Include="Threading\PolledTask.cs" />
     <Compile Include="Linq\ComparableExpression.cs" />
     <Compile Include="Linq\Expressions\ExpressionInfo.cs" />
     <Compile Include="Linq\Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reflection\AssemblyHelper.cs" />
-    <Compile Include="Reflection\TypeExtensions.cs" />
     <Compile Include="Versioning\IComponentEntity.cs" />
     <Compile Include="Versioning\IComponentsProvider.cs" />
     <Compile Include="Versioning\IDataUpdateManager.cs" />

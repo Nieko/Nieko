@@ -6,7 +6,6 @@ using Nieko.Infrastructure;
 using System.Data.Entity;
 using System.Collections;
 using System.Linq.Expressions;
-using Nieko.Infrastructure;
 using Nieko.Infrastructure.Data;
 
 namespace Nieko.Infrastructure.EntityFramework

@@ -90,13 +90,13 @@ namespace Nieko.Modules.Navigation.Data
             {
                 return (owner) => 
                     {
-                        if(owner == null || owner.View == null || owner.View.CurrentItem == null)
+                        if(owner == null || owner.CurrentItem == null)
                         {
                             return null;
                         }
                         else
                         {
-                            return (owner.View.CurrentItem as IEditableMirrorObject).SourceKey;
+                            return (owner.CurrentItem as IEditableMirrorObject).SourceKey;
                         }
                     };
             }
@@ -138,11 +138,11 @@ namespace Nieko.Modules.Navigation.Data
         {
             get
             {
-                return parent => parent == null || parent.View.CurrentItem == null;
+                return parent => parent == null || parent.CurrentItem == null;
             }
         }
 
-        public MembershipProvider(Func<IDataNavigatorOwnerBuilder> builderFactory, IDataStoresManager dataStoresManager, IPersistedView owner)
+        public MembershipProvider(Func<ITierCoordinatorBuilder> builderFactory, IDataStoresManager dataStoresManager, IPersistedView owner)
             : base(builderFactory, dataStoresManager, owner)
         {
             _Fields = new NotifyingFields(this, RaisePropertyChanged);

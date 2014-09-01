@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using Nieko.Infrastructure.Collections;
 
 namespace System
 {
@@ -126,7 +126,7 @@ namespace System
         /// <returns>Plain text name of Type</returns>
         public static string BasicName(this Type Type)
         {
-            
+
             string basicName = Type.Name;
 
             if (basicName.Contains("`"))
@@ -144,7 +144,61 @@ namespace System
         /// <returns>True if boxed type</returns>
         public static bool IsBoxedType(this Type type)
         {
-            return _BoxedTypes.Contains(type); 
+            return _BoxedTypes.Contains(type);
+        }
+
+        public static Expression<Func<object, object>> ToExpressionFromPath(this Type rootType, string memberPath)
+        {
+            var rootParameter = Expression.Parameter(typeof(object));
+
+            if(string.IsNullOrEmpty(memberPath))
+            {
+                return Expression.Lambda<Func<object, object>>(Expression.Convert(rootParameter, typeof(object)), rootParameter);
+            }
+
+            var paths = memberPath.Split('.');
+            Type currentType = rootType;
+            Expression currentExpression = null;
+
+            foreach(var path in paths)
+            {
+                var member = currentType.GetMember(path).First();
+                currentType = (member is PropertyInfo) ?
+                    (member as PropertyInfo).PropertyType :
+                    (member as FieldInfo).FieldType;
+
+                if(currentExpression == null)
+                {
+                    currentExpression =
+                        Expression.Condition(
+                            Expression.Equal(rootParameter, Expression.Constant(null)),
+                            Expression.Default(currentType),
+                            Expression.PropertyOrField(
+                                Expression.Convert(rootParameter, rootType),
+                                path));
+                }
+                else
+                {
+                    currentExpression = Expression.Condition(
+                            Expression.Equal(rootParameter, Expression.Constant(null)),
+                            Expression.Constant(currentType),
+                            Expression.PropertyOrField(currentExpression, path));
+                }
+            }
+
+            return Expression.Lambda<Func<object, object>>
+                (
+                    Expression.Convert(currentExpression, typeof(object)),
+                    rootParameter
+                );
+        }
+    
+        public static void TouchStaticProperties(this Type type, Type propertyType)
+        {
+            type.GetProperties(BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly)
+                .Where(p => p.PropertyType == propertyType)
+                .ToList()
+                .ForEach(p => p.GetValue(null, null));
         }
     }
 }

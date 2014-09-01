@@ -18,7 +18,7 @@ namespace Nieko.Infrastructure.Windows.Data
         /// <summary>
         /// Manager for presentation side of ModelView graph
         /// </summary>
-        IViewNavigator RegionNavigator { get; }
+        IViewNavigator ViewNavigator { get; }
         /// <summary>
         /// Lifetime provider for graph
         /// </summary>

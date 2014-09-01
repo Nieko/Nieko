@@ -1,0 +1,77 @@
+﻿<Window x:Class="Nieko.Modules.Navigation.RecordNavigator.RecordSearchControl"
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+            xmlns:local="clr-namespace:Nieko.Modules.Navigation.RecordNavigator"
+            mc:Ignorable="d" 
+            Height="592" Width="595"
+            d:DataContext="{d:DesignInstance Type=local:RecordSearchViewModelDesign, IsDesignTimeCreatable=True}"
+            WindowStyle="None" WindowStartupLocation="CenterScreen" AllowsTransparency="True" Background="Transparent">
+    <Border BorderBrush="{DynamicResource NormalBrush}" BorderThickness="{DynamicResource Thickness3}" CornerRadius="{DynamicResource CornerRadius3}" 
+            Background="{DynamicResource WindowBackgroundBrush}"
+             Padding="14" OpacityMask="#F2000000">
+        <DockPanel>
+            <Border DockPanel.Dock="Top" Background="{DynamicResource ShadeBrush}" Height="34" Margin="0,0,0,7">
+                <Label Margin="0,5,0,0" FontSize="{DynamicResource Title3Size}" Foreground="{DynamicResource TextBrush}" HorizontalAlignment="Center">Search for items...</Label>
+            </Border>
+            <DockPanel DockPanel.Dock="Top" LastChildFill="False">
+                <CheckBox DockPanel.Dock="Left" Margin="4" IsChecked="{Binding Search.IsAdvancedMode}" Visibility="{Binding Search.EntityDetails, Converter={StaticResource nullabled}}">Advanced Search</CheckBox>
+                <Label DockPanel.Dock="Right" Margin="2,2,4,0">results (zero returns all)</Label>
+                <TextBox DockPanel.Dock="Right" Margin="2,0" Height="22" Width="70"
+                         Text="{Binding Search.Take}" TextAlignment="Center"></TextBox>
+                <Label DockPanel.Dock="Right" Margin="4,2,2,0">Return only first</Label>
+            </DockPanel>
+            <DockPanel DockPanel.Dock="Bottom" LastChildFill="False">
+                <Button DockPanel.Dock="Right" Margin="4" Height="24" Width="90" Command="{Binding Cancel}">Cancel</Button>
+                <Button DockPanel.Dock="Right" Margin="4" Height="24" Width="90" Command="{Binding Apply}">Apply</Button>
+                <Button DockPanel.Dock="Right" Margin="4" Height="24" Width="90" Command="{Binding Clear}">Clear</Button>
+            </DockPanel>
+            <Grid DockPanel.Dock="Top" Margin="0,7">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="30"/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0" Background="{DynamicResource ShadeBrush}">
+                    <Label Margin="7,4" FontSize="{StaticResource Title3Size}" 
+                           Visibility="{Binding Search.IsAdvancedMode, Converter={StaticResource boolverter}}">Filter By Lines</Label>
+                </Grid>
+                <ListBox Grid.Row="1" ItemsSource="{Binding FilterGroups}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <DockPanel Width="535">
+                                <Border DockPanel.Dock="Top" Background="{DynamicResource ShadeBrush}" Visibility="{Binding ShowOrHeading}">
+                                    <DockPanel>
+                                        <Button DockPanel.Dock="Right" Height="26" Margin="7,0" Width="70"
+                                            Command="{Binding RemoveFilterCommand}">Delete</Button>
+                                        <Button DockPanel.Dock="Right" Height="26" Margin="7,0,0,0" Width="70"
+                                            Command="{Binding AddFilterCommand}">Add</Button>
+                                        <Label Margin="4" FontWeight="Bold">Or...</Label>
+                                    </DockPanel>
+                                </Border>
+                                <ListBox DockPanel.Dock="Bottom" ItemsSource="{Binding Filters}">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <ComboBox Height="24" Width="200" Margin="4,2" 
+                                                        ItemsSource="{Binding Filter.PathOptions}" SelectedValue="{Binding Filter.Path}"/>
+                                                <ComboBox Height="24" Width="40" Margin="4,2" 
+                                                        ItemsSource="{Binding Filter.ComparisonOptions}" SelectedValue="{Binding Filter.Comparison}"/>
+                                                <TextBox Text="{Binding Filter.Filter}" Width="240"/>
+                                                <Button Height="22" Width="22" Margin="2,0" Foreground="{StaticResource RedBrush}"
+                                                        FontWeight="Bold" FontFamily="SketchFlow Print" >X</Button>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </DockPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <Button Width="60" Height="24" HorizontalAlignment="Right" Margin="0,0,7,0"
+                        Grid.Row="2" Command="{Binding AddLineItemGroupCommand}">Or...</Button>
+        </Grid>
+        </DockPanel>
+    </Border>
+</Window>

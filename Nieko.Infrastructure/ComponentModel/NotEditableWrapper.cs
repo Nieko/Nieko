@@ -19,6 +19,8 @@ namespace Nieko.Infrastructure.ComponentModel
             }
         }
 
+        public bool SuppressNotifications { get; set; }
+
         public bool HasChanged 
         {
             get
@@ -44,6 +46,11 @@ namespace Nieko.Infrastructure.ComponentModel
         public void EndEdit()
         {
             throw new InvalidOperationException("Object is not editable");
+        }
+
+        public bool IsReadOnly
+        {
+            get { return true; }
         }
     }
 }

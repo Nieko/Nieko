@@ -4,6 +4,7 @@
                     xmlns:po="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
                     mc:Ignorable="d"
                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008">
+    
     <SolidColorBrush po:Freeze="True" x:Key="FlatButton" Color="{DynamicResource MainColor}"/>
     <SolidColorBrush po:Freeze="True" x:Key="FlatButtonOver" Color="#FF707070"/>
     <SolidColorBrush po:Freeze="True" x:Key="FlatButtonPress" Color="#FFAAAAAA"/>

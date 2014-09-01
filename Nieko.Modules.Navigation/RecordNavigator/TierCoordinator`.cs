@@ -16,22 +16,23 @@ using Nieko.Infrastructure.Navigation.RecordNavigation;
 using Nieko.Infrastructure;
 using Nieko.Infrastructure.Navigation;
 using System.Transactions;
+using Nieko.Infrastructure.Threading;
 
 namespace Nieko.Modules.Navigation.RecordNavigator
 {
     /// <summary>
-    /// Generic implementation of an <seealso cref="IDataNavigatorOwner"/>
+    /// Generic implementation of an <see cref="ITierCoordinator"/>
     /// </summary>
     /// <typeparam name="T">Type of entity mirror in collection at this tier</typeparam>
-    internal class DataNavigatorOwner<T> : IDataNavigatorOwner
+    internal class TierCoordinator<T> : ITierCoordinator
         where T : IEditableMirrorObject
     {
         private object _Lock = new object();
         private bool _IgnoreEditStateEvents;
         private bool _IsDisposing;
         private NotifyingFields _Fields;
-        private HashSet<IDataNavigatorOwner> _Children;
-        private Dictionary<IDataNavigatorOwner, Action> _RemoveActionByChild;
+        private HashSet<ITierCoordinator> _Children;
+        private Dictionary<ITierCoordinator, Action> _RemoveActionByChild;
         private IPersistedView<T> _PersistedView;
         
         private Action _PendingPersistAction = null;
@@ -48,6 +49,7 @@ namespace Nieko.Modules.Navigation.RecordNavigator
         public event NotifyCollectionChangedEventHandler ItemsCollectionChanged;
         public event PropertyChangedEventHandler PropertyChanged;
         public event EventHandler<PersistingChangesEventArgs> PersistingChanges = delegate { };
+        private IViewNavigator _RegionNavigator;
 
         public bool AllowEdit 
         {
@@ -61,6 +63,8 @@ namespace Nieko.Modules.Navigation.RecordNavigator
             }
         }
 
+        public Type ItemType { get { return typeof(T); } }
+
         public IPersistedView PersistedView
         {
             get
@@ -69,7 +73,7 @@ namespace Nieko.Modules.Navigation.RecordNavigator
             }
         }
 
-        public IDataNavigatorOwner Parent 
+        public ITierCoordinator Parent 
         {
             get
             {
@@ -151,14 +155,15 @@ namespace Nieko.Modules.Navigation.RecordNavigator
 
         protected IDataStoresManager DataStoresManager { get; private set; }
 
-        private DataNavigatorOwner(IDataNavigatorOwner parent, INotifyDisposing owner, IDataStoresManager dataStoresManager, IDataNavigator dataNavigator, IPersistedView<T> persistedView, IViewNavigator regionNavigator)
+        private TierCoordinator(ITierCoordinator parent, INotifyDisposing owner, IDataStoresManager dataStoresManager, IDataNavigator dataNavigator, IPersistedView<T> persistedView, IViewNavigator regionNavigator)
         {
             DataStoresManager = dataStoresManager;
             _PersistedView = persistedView;
+            _RegionNavigator = regionNavigator;
 
             _Fields = new NotifyingFields(this, () => PropertyChanged);
-            _Children = new HashSet<IDataNavigatorOwner>();
-            _RemoveActionByChild = new Dictionary<IDataNavigatorOwner, Action>();
+            _Children = new HashSet<ITierCoordinator>();
+            _RemoveActionByChild = new Dictionary<ITierCoordinator, Action>();
             _IgnoreEditStateEvents = false;
             Hierarchy = new OwnershipHierarchy(_Children)
             {
@@ -221,20 +226,17 @@ namespace Nieko.Modules.Navigation.RecordNavigator
             _PersistedView.Disposing += persistedViewDisposing;
             owner.Disposing += ownerDisposing;
 
-            regionNavigator.EnqueueUIWork(() =>
+            _RegionNavigator.EnqueueUIWork(() =>
                 {
-                    var viewSource = new CollectionViewSource();
-
-                    Items = new ObservableCollection<T>();
+                    Items = new ObservableRangeCollection<T>();
 
                     _ItemsCollectionChangedRouter = WeakEventRouter.CreateInstance(this, Items,
                         () => default(NotifyCollectionChangedEventArgs),
                         (p, d) => p.CollectionChanged += d.Handler,
                         (p, d) => p.CollectionChanged -= d.Handler,
-                        OnItemsCollectionChanged); 
+                        OnItemsCollectionChanged);
 
-                    viewSource.Source = Items;
-                    _PersistedView.View = (ListCollectionView)viewSource.View;
+                    _PersistedView.SetSource(Items);
 
                     Parent = parent;
 
@@ -242,13 +244,13 @@ namespace Nieko.Modules.Navigation.RecordNavigator
                 });
         }
 
-        public DataNavigatorOwner(INotifyDisposing owner, IDataStoresManager dataStoresManager, IDataNavigator dataNavigator, IPersistedView<T> persistedView, IViewNavigator regionNavigator)
+        public TierCoordinator(INotifyDisposing owner, IDataStoresManager dataStoresManager, IDataNavigator dataNavigator, IPersistedView<T> persistedView, IViewNavigator regionNavigator)
             : this(null, owner, dataStoresManager, dataNavigator, persistedView, regionNavigator) { }
 
-        public DataNavigatorOwner(IDataNavigatorOwner parent, IDataStoresManager dataStoresManager, IDataNavigator dataNavigator, IPersistedView<T> persistedView, IViewNavigator regionNavigator)
+        public TierCoordinator(ITierCoordinator parent, IDataStoresManager dataStoresManager, IDataNavigator dataNavigator, IPersistedView<T> persistedView, IViewNavigator regionNavigator)
             : this(parent, parent, dataStoresManager, dataNavigator, persistedView, regionNavigator) { }
 
-        private void AddChild(IDataNavigatorOwner child)
+        private void AddChild(ITierCoordinator child)
         {
             EventHandler childDisposing = null;
             IWeakEventRouter _ChildNavigatorRouter = null;
@@ -281,7 +283,7 @@ namespace Nieko.Modules.Navigation.RecordNavigator
                 (s, p, a) => ChildDataNavigatorPropertyChanged(p, a));
         }
 
-        private void RemoveChild(IDataNavigatorOwner child)
+        private void RemoveChild(ITierCoordinator child)
         {
             if (!_RemoveActionByChild.ContainsKey(child))
             {
@@ -312,14 +314,20 @@ namespace Nieko.Modules.Navigation.RecordNavigator
         protected virtual void DisposeImpl()
         {
             Parent = null;
+
+            if (DataNavigator != null)
+            {
+                DataNavigator.Dispose();
+            }
+
             Disposing(this, EventArgs.Empty);
         }
 
         private void CheckIsRoot()
         {
-            Func<IDataNavigatorOwner, bool> rootCheck = null;
-            Func<IDataNavigatorOwner, IDataNavigatorOwner> getFirstGeneration = null;
-            Func<IDataNavigatorOwner, bool> isNotDefault = null;
+            Func<ITierCoordinator, bool> rootCheck = null;
+            Func<ITierCoordinator, ITierCoordinator> getFirstGeneration = null;
+            Func<ITierCoordinator, bool> isNotDefault = null;
 
             getFirstGeneration = (child) =>
                 {
@@ -418,7 +426,7 @@ namespace Nieko.Modules.Navigation.RecordNavigator
 
             _IgnoreEditStateEvents = true;
 
-            AllowEdit = Parent.PersistedView.View.CurrentItem != null;
+            AllowEdit = Parent.PersistedView.CurrentItem != null;
 
             Reload();
 
@@ -435,23 +443,40 @@ namespace Nieko.Modules.Navigation.RecordNavigator
 
         private void UpdateAllowEdit()
         {
-            AllowEdit = (Parent.AllowEdit && Parent.PersistedView.View.CurrentItem != null); 
+            AllowEdit = (Parent.AllowEdit && Parent.PersistedView.CurrentItem != null);
         }
 
         private void Reload()
         {
             _PersistedView.RunOpened(() =>
                 {
+                    _IgnoreEditStateEvents = true;
                     Items.Clear();
 
-                    foreach (var item in _PersistedView.ItemsLoader())
+                    if (Items is ObservableRangeCollection<T>)
                     {
-                        Items.Add(item);
+                        var copier = new VirtualCollectionCopy<T>()
+                        {
+                            Source = _PersistedView.ItemsLoader().GetEnumerator(),
+                            ViewNavigator = _RegionNavigator,
+                            BatchAction = (d, b) => (d as ObservableRangeCollection<T>).AddRange(b)
+                        };
+
+                        copier.PostCopyAction = () => _IgnoreEditStateEvents = false;
+                        copier.Copy(Items);
+                    }
+                    else
+                    {
+                        foreach (var item in _PersistedView.ItemsLoader())
+                        {
+                            Items.Add(item);
+                        }
+                        _IgnoreEditStateEvents = true;
                     }
                 });
         }
 
-        private void CurrentChanging(DataNavigatorOwner<T> owner, IDataNavigator sender, CurrentChangingEventArgs e)
+        private void CurrentChanging(TierCoordinator<T> owner, IDataNavigator sender, CurrentChangingEventArgs e)
         {
             EventHandler viewCurrentChanged = null;
 
@@ -466,7 +491,7 @@ namespace Nieko.Modules.Navigation.RecordNavigator
             sender.ViewCurrentChanged += viewCurrentChanged;
         }
 
-        private void OnItemsCollectionChanged(DataNavigatorOwner<T> owner, INotifyCollectionChanged sender, NotifyCollectionChangedEventArgs args)
+        private void OnItemsCollectionChanged(TierCoordinator<T> owner, INotifyCollectionChanged sender, NotifyCollectionChangedEventArgs args)
         {
             var handler = ItemsCollectionChanged;
 
@@ -500,7 +525,7 @@ namespace Nieko.Modules.Navigation.RecordNavigator
             _IgnoreEditStateEvents = false;
         }
 
-        private void RootVisibleDataNavigatorPropertyChanged(DataNavigatorOwner<T> owner, INotifyPropertyChanged sender, PropertyChangedEventArgs args)
+        private void RootVisibleDataNavigatorPropertyChanged(TierCoordinator<T> owner, INotifyPropertyChanged sender, PropertyChangedEventArgs args)
         {
             if (args.PropertyName == BindingHelper.Name((IDataNavigator o) => o.EditState))
             {

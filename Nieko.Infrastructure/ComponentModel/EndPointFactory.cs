@@ -21,24 +21,24 @@ namespace Nieko.Infrastructure.ComponentModel
 
             if (_ExistingEndPoints.TryGetValue(propertyName, out existing))
             {
-                return new ExistingEndPointFactory(existing); 
+                return new ExistingEndPointFactory(existing);
             }
 
             _EndPointBuild = () =>
+            {
+                var endPoint = new EndPoint()
                 {
-                    var endPoint = new EndPoint()
-                    {
-                        Parent = parent,
-                        Name = propertyName,
-                        Type = type,
-                        CreateMenuEntry = type != EndPointType.ReportPage,
-                        CreatedBy = typeof(TOwner)
-                    };
-
-                    endPoint.Description = endPoint.Name;
-
-                    return endPoint;
+                    Parent = parent,
+                    Name = propertyName,
+                    Type = type,
+                    CreateMenuEntry = type != EndPointType.ReportPage,
+                    CreatedBy = typeof(TOwner)
                 };
+
+                endPoint.Description = endPoint.Name;
+
+                return endPoint;
+            };
 
             return this;
         }

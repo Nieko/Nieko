@@ -39,7 +39,7 @@ namespace Nieko.Infrastructure.ComponentModel
         }
 
         /// <summary>
-        /// Create to-way Type Mapper
+        /// Create two-way Type Mapper
         /// </summary>
         /// <typeparam name="TFrom">Type mapping from</typeparam>
         /// <typeparam name="TTo">Type mapping to</typeparam>

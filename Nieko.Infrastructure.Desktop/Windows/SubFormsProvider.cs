@@ -23,6 +23,7 @@ namespace Nieko.Infrastructure.Windows
             return Get<TView, ISuiteFormViewModel<T>, TViewModel>(endPoint, regionName);
         }
 
-        public SubFormsProvider(IGenericSupplierBuilder supplierBuilder) : base(supplierBuilder) { }
+        public SubFormsProvider(IViewModelFormFactory factory) :
+            base(factory) { }
     }
 }

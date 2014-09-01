@@ -17,39 +17,39 @@ namespace Nieko.Modules.Navigation.RecordNavigator
     /// </remarks>
     public sealed class OwnershipHierarchy : IOwnershipHierarchy
     {
-        private IEnumerable<IDataNavigatorOwner> _Children; 
+        private IEnumerable<ITierCoordinator> _Children; 
 
         /// <summary>
         /// Parent of Children enumerated by this class. The Parent
         /// property Hierarchy references back to the same instance.
         /// </summary>
-        public IDataNavigatorOwner Parent { get; internal set; }
+        public ITierCoordinator Parent { get; internal set; }
 
-        internal Action<IDataNavigatorOwner> ChildAddition { get; set;}
-        internal Action<IDataNavigatorOwner> ChildRemoval { get; set; }
+        internal Action<ITierCoordinator> ChildAddition { get; set;}
+        internal Action<ITierCoordinator> ChildRemoval { get; set; }
 
-        internal OwnershipHierarchy(HashSet<IDataNavigatorOwner> children)
+        internal OwnershipHierarchy(HashSet<ITierCoordinator> children)
         {
             _Children = children;
             ChildAddition = o => { };
             ChildRemoval = o => { };
         }
 
-        public void AddChild(IDataNavigatorOwner child)
+        public void AddChild(ITierCoordinator child)
         {
             ChildAddition(child); 
         }
 
-        public void RemoveChild(IDataNavigatorOwner child)
+        public void RemoveChild(ITierCoordinator child)
         {
             ChildRemoval(child);
         }
 
         /// <summary>
-        /// Allows enumeration through Children of the <see cref="Parent"/> IDataNavigatorOwner
+        /// Allows enumeration through Children of the <see cref="Parent"/> ITierCoordinator
         /// </summary>
         /// <returns></returns>
-        public IEnumerator<IDataNavigatorOwner> GetEnumerator()
+        public IEnumerator<ITierCoordinator> GetEnumerator()
         {
             return _Children.GetEnumerator();
         }

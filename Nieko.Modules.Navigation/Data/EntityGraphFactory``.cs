@@ -15,7 +15,7 @@ namespace Nieko.Modules.Navigation.Data
     {
         internal IPersistedViewRoot Root { get; set; }
 
-        internal Func<IDataNavigatorOwnerBuilder> BuilderFactory { get; set; }
+        internal Func<ITierCoordinatorBuilder> BuilderFactory { get; set; }
 
         internal IDataStoresManager DataStoresManager { get; set; }
 

@@ -31,7 +31,7 @@ namespace Nieko.Infrastructure.Windows.Data
     public abstract class SingletonPersistedView<T> : ListCollectionViewWrapper, IPersistedView<T>
         where T : IEditableMirrorObject
     {
-        private readonly Func<IDataNavigatorOwnerBuilder> _BuilderFactory;
+        private readonly Func<ITierCoordinatorBuilder> _BuilderFactory;
         private readonly IViewNavigator _RegionNavigator;
 
         private bool _IsDisposing = false;
@@ -41,6 +41,8 @@ namespace Nieko.Infrastructure.Windows.Data
         private ReadOnlyCollection<T> _SingletonCollection;
         private IWeakEventRouter _ViewCurrentChangedRouter;
 
+        public event EventHandler<PersistedViewPersistingEventArgs> Persisting = delegate { };
+        public event EventHandler ViewChanged = delegate { };
         public event EventHandler Disposing;
         public event EventHandler Loaded;
         public event PropertyChangedEventHandler PropertyChanged;
@@ -54,7 +56,7 @@ namespace Nieko.Infrastructure.Windows.Data
                     return _Instance;
                 }
 
-                ICollection<T> wrapper = (Owner.PersistedView.View.SourceCollection as ICollection<T>);
+                ICollection<T> wrapper = (Owner.PersistedView.SourceCollection as ICollection<T>);
 
                 if (wrapper.Count == 0)
                 {
@@ -73,7 +75,7 @@ namespace Nieko.Infrastructure.Windows.Data
                     return;
                 }
 
-                ICollection<T> wrapper = (Owner.PersistedView.View.SourceCollection as ICollection<T>);
+                ICollection<T> wrapper = (Owner.PersistedView.SourceCollection as ICollection<T>);
 
                 if (value == null)
                 {
@@ -112,7 +114,7 @@ namespace Nieko.Infrastructure.Windows.Data
             }
         }
 
-        public IDataNavigatorOwner Owner { get; private set; }
+        public ITierCoordinator Owner { get; private set; }
 
         public ObservableCollection<T> Items { get; set; }
 
@@ -133,7 +135,7 @@ namespace Nieko.Infrastructure.Windows.Data
 
         protected INotifyModelViewGraphNodeLoaded LoadedPublisher { get; private set; }
 
-        public SingletonPersistedView(Func<IDataNavigatorOwnerBuilder> builderFactory, IDataStoresManager dataStoresManager, IViewNavigator regionNavigator, INotifyModelViewGraphNodeLoaded loadedPublisher)
+        public SingletonPersistedView(Func<ITierCoordinatorBuilder> builderFactory, IDataStoresManager dataStoresManager, IViewNavigator regionNavigator, INotifyModelViewGraphNodeLoaded loadedPublisher)
         {
             _SingletonWrapper = new List<T>();
             _SingletonCollection = new ReadOnlyCollection<T>(_SingletonWrapper); 
@@ -154,8 +156,8 @@ namespace Nieko.Infrastructure.Windows.Data
 
                    _RegionNavigator.EnqueueUIWork(() =>
                     {
-                        (Owner.PersistedView.View.SourceCollection as ICollection<T>).Add(_Instance);
-                        Owner.PersistedView.View.MoveCurrentToFirst();
+                        (Owner.PersistedView.SourceCollection as ICollection<T>).Add(_Instance);
+                        Owner.PersistedView.MoveCurrentToFirst();
                     });
 
                    LoadedPublisher.Loaded -= ownerLoadedHandler;
@@ -236,6 +238,11 @@ namespace Nieko.Infrastructure.Windows.Data
             {
                 handler(this, new PropertyChangedEventArgs(propertyName)); 
             }
+        }
+
+        public void SetSource(System.Collections.IList items)
+        {
+            View = (ListCollectionView)CollectionViewSource.GetDefaultView(items);
         }
     }
 }

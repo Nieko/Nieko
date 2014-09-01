@@ -27,7 +27,7 @@ namespace Nieko.Modules.Architecture.Navigation
 
         public ModalMessageButton ShowModalMessage(string message, ModalMessageButton buttons)
         {
-            return ShowModalMessage(string.Empty, message, ModalMessageButton.Ok);
+            return ShowModalMessage(string.Empty, message, buttons);
         }
 
         public ModalMessageButton ShowModalMessage(string title, string message, ModalMessageButton buttons)

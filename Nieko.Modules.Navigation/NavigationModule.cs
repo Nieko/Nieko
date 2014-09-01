@@ -26,13 +26,14 @@ namespace Nieko.Modules.Navigation
             Container.RegisterInstance<Func<IViewNavigator>>(() => Container.Resolve<IViewNavigator>());  
             Container.RegisterSingleton<IMenuBarManager, MenuBarManager>();
             Container.RegisterSingleton<IStartupNotifier, StartupNotifier>();
-            Container.RegisterSingleton<IMenuNavigator, MenuNavigator>();
             
             Container.RegisterTypeAndFactory<IStartupNotificationsRequestEvent, StartupNotificationsRequestEvent>();
 
             Container.RegisterTypeAndFactory<IFormsManager, FormsManager>();
+            Container.RegisterSingleton<IViewModelFormFactory, ViewModelFormFactory>();
+            Container.RegisterSingleton<IMenuNavigator, MenuNavigator>(true);
             Container.RegisterSingleton<IDataNavigatorFactory, DataNavigatorFactory>();
-            Container.RegisterTypeAndFactory<IDataNavigatorOwnerBuilder, DataNavigatorOwnerBuilder>();
+            Container.RegisterTypeAndFactory<ITierCoordinatorBuilder, TierCoordinatorBuilder>();
 
             Container.RegisterTypeAndFactory<IDataNavigator, DataNavigator>();
             Container.RegisterTypeAndFactory<IDataNavigatorViewModel, DataNavigatorViewModel>();

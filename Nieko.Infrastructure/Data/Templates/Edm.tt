@@ -133,7 +133,8 @@ namespace <#=namespaceName#>
 <#
         WriteLazyLoadingEnabled(container);
 #>
-        OnContextCreated();
+        this.CommandTimeout = 720;
+		OnContextCreated();
     }
     
     partial void OnContextCreated();

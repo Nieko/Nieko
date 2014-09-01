@@ -7,11 +7,11 @@ namespace Nieko.Infrastructure.EventAggregation
 {
     /// <summary>
     /// Provide simple access to an Event Aggregator implementation so that
-    /// it may be called from <seealso cref="IInfrastructureEventAggregator"/>.
+    /// it may be called from <see cref="IInfrastructureEventAggregator"/>.
     /// <remarks>
-    /// In conjunction with <seealso cref="IInfrastructureEventAggregator"/> acts as a bridge between
+    /// In conjunction with <see cref="IInfrastructureEventAggregator"/> acts as a bridge between
     /// the abstract Infrastructure Event system and whatever the concrete implementation is.
-    /// Refer <seealso cref="IInfrastructureEventAggregator"/> for details on the methods
+    /// Refer <see cref="IInfrastructureEventAggregator"/> for details on the methods
     /// </remarks>
     /// </summary>
     public interface IEventAggregatorFacade

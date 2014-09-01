@@ -8,7 +8,7 @@ using System.Security.Principal;
 namespace Nieko.Infrastructure.Security
 {
     /// <summary>
-    /// Provides security details for <seealso cref="IMenu"/> instances
+    /// Provides security details for <see cref="IMenu"/> instances
     /// </summary>
     public interface IMenuAccessManager
     {

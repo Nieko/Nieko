@@ -1,0 +1,9 @@
+﻿<ResourceDictionary
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/Nieko.Infrastructure.Desktop;component/Styles/NiekoResources.xaml"/>
+		<ResourceDictionary Source="/ReCount.Themes.Desktop;component/Theme.xaml"/>
+	</ResourceDictionary.MergedDictionaries>
+	<!-- Resource dictionary entries should be defined here. -->
+</ResourceDictionary>

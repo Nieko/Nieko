@@ -6,7 +6,7 @@ using System.Text;
 namespace Nieko.Infrastructure
 {
     /// <summary>
-    /// <seealso cref="IDisposable"/> functionality with an additional
+    /// <see cref="IDisposable"/> functionality with an additional
     /// event notifying when an object has begun disposal
     /// </summary>
     public interface INotifyDisposing : IDisposable

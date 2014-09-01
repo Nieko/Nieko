@@ -6,7 +6,7 @@ using System.Text;
 namespace Nieko.Infrastructure.EventAggregation
 {
     /// <summary>
-    /// Notification message details given to an <seealso cref="IStartupNotificationsRequestEvent"/> event.
+    /// Notification message details given to an <see cref="IStartupNotificationsRequestEvent"/> event.
     /// </summary>
     public class StartupNotification
     {

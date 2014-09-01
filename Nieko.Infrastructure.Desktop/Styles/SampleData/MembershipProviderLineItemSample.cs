@@ -18,6 +18,8 @@ namespace Nieko.Infrastructure.Styles.SampleData
 
         public bool IsEditing { get { return false; } }
 
+        public bool SuppressNotifications { get; set; }
+
         public bool HasChanged { get; set; }
 
         public void BeginEdit() { }
@@ -32,6 +34,11 @@ namespace Nieko.Infrastructure.Styles.SampleData
         {
             RemoveVisibility = Visibility.Visible;
             HasChanged = false;
+        }
+
+        public bool IsReadOnly
+        {
+            get { return false; }
         }
     }
 }

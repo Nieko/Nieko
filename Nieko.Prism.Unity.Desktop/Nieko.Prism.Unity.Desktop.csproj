@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,6 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug Release Con|AnyCPU'">
     <OutputPath>bin\Debug Release Con\</OutputPath>
@@ -53,6 +55,7 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
@@ -71,11 +74,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\Program Files\Microsoft Prism\PrismLibrary\Desktop\Prism.UnityExtensions\Prism.UnityExtensions.Desktop.csproj">
+    <ProjectReference Include="..\..\..\..\3rd Party\Prism 4.1\PrismLibrary\Desktop\Prism.UnityExtensions\Prism.UnityExtensions.Desktop.csproj">
       <Project>{17831F3B-6B82-4916-BD2B-2CE2071EA622}</Project>
       <Name>Prism.UnityExtensions.Desktop</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\Program Files\Microsoft Prism\PrismLibrary\Desktop\Prism\Prism.Desktop.csproj">
+    <ProjectReference Include="..\..\..\..\3rd Party\Prism 4.1\PrismLibrary\Desktop\Prism\Prism.Desktop.csproj">
       <Project>{77138947-1D13-4E22-AEE0-5D0DD046CA34}</Project>
       <Name>Prism.Desktop</Name>
     </ProjectReference>

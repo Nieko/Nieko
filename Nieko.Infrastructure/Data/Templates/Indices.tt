@@ -68,13 +68,14 @@ foreach (EntityContainer container in GetSourceSchemaTypes<EntityContainer>())
 		dbSchema = storeEntitySet.MetadataProperties["Schema"].Value.ToString();
 		
 		entity = set.ElementType;
-			hasPrimaryKey = entity.Properties.Any(p=>p.Documentation != null 
-					&& p.Documentation.LongDescription != null 
-					&& p.Documentation.LongDescription.Contains("[PrimaryKey]")) ||
-				entity.NavigationProperties.Any(n => n.DeclaringType == entity
-					&& n.Documentation != null &&
-					n.Documentation.LongDescription != null &&
-					n.Documentation.LongDescription.Contains("[PrimaryKey]"));
+		hasPrimaryKey = !entity.Abstract &&
+			(entity.Properties.Any(p=>p.Documentation != null 
+				&& p.Documentation.LongDescription != null 
+				&& p.Documentation.LongDescription.Contains("[PrimaryKey]")) ||
+			entity.NavigationProperties.Any(n => n.DeclaringType == entity
+				&& n.Documentation != null &&
+				n.Documentation.LongDescription != null &&
+				n.Documentation.LongDescription.Contains("[PrimaryKey]")));
 			if(!hasPrimaryKey)
 			{
 				continue;

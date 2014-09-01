@@ -58,6 +58,10 @@ namespace Nieko.Infrastructure.Navigation.RecordNavigation
         /// </summary>
         ICommand Save { get; }
         /// <summary>
+        /// Open UI for editing current filters and sorting
+        /// </summary>
+        ICommand ChangeSearchFilter { get; }
+        /// <summary>
         /// Visibility of Cancel UI element(s)
         /// </summary>
         Visibility CancelVisible { get; set;}

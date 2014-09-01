@@ -16,16 +16,20 @@ namespace Nieko.Infrastructure.Windows.Data
     /// <summary>
     /// Persistence for a ModelView collection view
     /// </summary>
-    public interface IPersistedView : INotifyDisposing, INotifyPropertyChanged, INotifyModelViewGraphNodeLoaded, IEditableCollectionViewAddNewItem, ICollectionView, IEnumerable
+    public interface IPersistedView : INotifyDisposing, INotifyPropertyChanged, INotifyModelViewGraphNodeLoaded, ICollectionViewWrapper
     {
         /// <summary>
-        /// Collection view
+        /// Persisting Events
         /// </summary>
-        ListCollectionView View { get; set; }
+        event EventHandler<PersistedViewPersistingEventArgs> Persisting;
+        /// <summary>
+        /// Raised when Collection View component(s) are available or changed
+        /// </summary>
+        event EventHandler ViewChanged;
         /// <summary>
         /// Coordinator of data navigation for collection view
         /// </summary>
-        IDataNavigatorOwner Owner { get; }
+        ITierCoordinator Owner { get; }
         /// <summary>
         /// Dictionary of all unsaved items marked for deletion by their PrimaryKey
         /// </summary>
@@ -45,5 +49,9 @@ namespace Nieko.Infrastructure.Windows.Data
         /// </summary>
         /// <param name="storeOpenedAction">Store action</param>
         void RunOpened(Action storeOpenedAction);
+        /// <summary>
+        /// Changes the source collection
+        /// </summary>
+        void SetSource(IList items);
     }
 }

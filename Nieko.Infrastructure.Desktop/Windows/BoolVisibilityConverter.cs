@@ -84,7 +84,7 @@ namespace Nieko.Infrastructure.Windows
             Dictionary<bool, Visibility> conversions = null;
             List<string> parameters;
 
-            if (parameter is String || parameter is string)
+            if (parameter is string)
             {
                 parameters = new List<string>(((String)parameter).Split(','));
                 if (parameters.Count == 2)

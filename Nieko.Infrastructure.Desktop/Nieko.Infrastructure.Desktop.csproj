@@ -40,6 +40,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -49,6 +50,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug Release Con|AnyCPU'">
     <OutputPath>bin\Debug Release Con\</OutputPath>
@@ -85,12 +87,16 @@
     <Reference Include="WindowsBase" />
     <Reference Include="Xceed.Wpf.Toolkit, Version=1.9.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\3rd Party\4.0\Xceed.Wpf.Toolkit\Xceed.Wpf.Toolkit.dll</HintPath>
+      <HintPath>..\..\Xceed.Wpf.Toolkit\Xceed.Wpf.Toolkit.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ComponentModel\ICollectionViewWrapper.cs" />
     <Compile Include="ComponentModel\IWeakEventDestination.cs" />
     <Compile Include="ComponentModel\IWeakEventRouter.cs" />
+    <Compile Include="ComponentModel\Repositioner.cs" />
+    <Compile Include="ComponentModel\SortDescriptionCollectionExtensions.cs" />
+    <Compile Include="ComponentModel\UniqueOptions`.cs" />
     <Compile Include="ComponentModel\ViewModelling\DataDefinition`.cs" />
     <Compile Include="ComponentModel\ViewModelling\IModelViewDefinition.cs" />
     <Compile Include="ComponentModel\ViewModelling\ModelViewTemplate.cs">
@@ -109,11 +115,20 @@
     <Compile Include="Export\IPrintManager.cs" />
     <Compile Include="Export\PrintChildAttribute.cs" />
     <Compile Include="IApplicationDetails.cs" />
+    <Compile Include="Navigation\RecordNavigation\IRecordFilter.cs" />
+    <Compile Include="Navigation\RecordNavigation\IRecordSearch.cs" />
     <Compile Include="Navigation\RecordNavigation\IOwnershipHierarchy.cs" />
     <Compile Include="Navigation\RecordNavigation\PersistingChangesEventArgs.cs" />
+    <Compile Include="Navigation\RecordNavigation\IRecordFilterGroup.cs" />
     <Compile Include="Styles\SampleData\MembershipProviderLineItemSample.cs" />
     <Compile Include="Styles\SampleData\MembershipProviderSample.cs" />
+    <Compile Include="ViewModel\INiekoFactory.cs" />
+    <Compile Include="ViewModel\NiekoForm.cs" />
+    <Compile Include="ViewModel\NiekoFormCatalog.cs" />
+    <Compile Include="ViewModel\NiekoFormException.cs" />
+    <Compile Include="Windows\BoolNotConverter.cs" />
     <Compile Include="Windows\Data\IEntityGraphFactory``.cs" />
+    <Compile Include="Windows\Data\IEntityPersistedView.cs" />
     <Compile Include="Windows\Data\IFinishedGraphFactory```.cs" />
     <Compile Include="Windows\Data\IMembershipProvider.cs" />
     <Compile Include="Navigation\IMenuBarManager.cs" />
@@ -144,14 +159,19 @@
     <Compile Include="Windows\Data\INotifyModelViewGraphNodeLoaded.cs" />
     <Compile Include="Windows\Data\IOwnedGraphFactory.cs" />
     <Compile Include="Windows\Data\IPersistedView`.cs" />
-    <Compile Include="Windows\Data\ListCollectionViewWrapper.cs" />
+    <Compile Include="ComponentModel\ListCollectionViewWrapper.cs" />
+    <Compile Include="Windows\IViewModelFormFactory.cs" />
     <Compile Include="Windows\Data\MembershipLineItem.cs" />
+    <Compile Include="Windows\Data\PersistedViewPersistingEventArgs.cs" />
+    <Compile Include="Windows\Data\SampleData\MembershipProviderSample`.cs" />
     <Compile Include="Windows\Data\SampleData\PersistedViewSample`.cs" />
     <Compile Include="Windows\Data\SingletonPersistedView.cs" />
+    <Compile Include="Windows\EmptyStringVisibilityConverter.cs" />
     <Compile Include="Windows\FormsSuiteBase.cs" />
     <Compile Include="Windows\FormsSuiteControl.cs" />
     <Compile Include="Windows\IExportableSubForm.cs" />
     <Compile Include="Windows\IFormsManager.cs" />
+    <Compile Include="Windows\IFormsProvider.cs" />
     <Compile Include="Windows\IFormsSuite.cs" />
     <Compile Include="Windows\ISuiteForm.cs" />
     <Compile Include="Windows\ISuiteFormViewModel.cs" />
@@ -169,7 +189,6 @@
     <Compile Include="Windows\Background\DesktopViewModel.cs" />
     <Compile Include="Windows\Background\IDesktopViewModel.cs" />
     <Compile Include="Windows\BoolExpanderHeaderConverter.cs" />
-    <Compile Include="Windows\ColumnBox.cs" />
     <Compile Include="Windows\Data\IGraphFactory.cs" />
     <Compile Include="Windows\Data\IMembershipProviderFactory`.cs" />
     <Compile Include="Windows\Data\IMembershipProviderLineItem.cs" />
@@ -184,27 +203,27 @@
     <Compile Include="Windows\RelayCommand.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Styles\ColumnBox.xaml">
+    <Page Include="Styles\FlatButton.xaml">
       <SubType>Designer</SubType>
-    </None>
-    <None Include="Styles\FlatButton.xaml">
+    </Page>
+    <Page Include="Styles\FormsSuiteControl.xaml">
       <SubType>Designer</SubType>
-    </None>
-    <None Include="Styles\FormsSuiteControl.xaml">
+    </Page>
+    <Page Include="Styles\MemberList.xaml">
       <SubType>Designer</SubType>
-    </None>
-    <None Include="Styles\MemberList.xaml">
+    </Page>
+    <Page Include="Styles\NiekoResources.xaml">
       <SubType>Designer</SubType>
-    </None>
-    <None Include="Styles\NiekoResources.xaml">
+    </Page>
+    <Page Include="Styles\DefaultStyle.xaml">
       <SubType>Designer</SubType>
-    </None>
-    <None Include="Styles\SpecialFlatButton.xaml">
+    </Page>
+    <Page Include="Styles\SpecialFlatButton.xaml">
       <SubType>Designer</SubType>
-    </None>
-    <None Include="Styles\WPFToolkit.xaml">
+    </Page>
+    <Page Include="Styles\WPFToolkit.xaml">
       <SubType>Designer</SubType>
-    </None>
+    </Page>
     <Page Include="Windows\Background\Desktop.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -244,7 +263,24 @@
       <Name>Nieko.Infrastructure</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Images\add.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\control_end_blue.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\control_fastforward_blue.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\control_rewind_blue.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\control_start_blue.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\funnel.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

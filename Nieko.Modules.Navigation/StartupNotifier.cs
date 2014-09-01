@@ -18,7 +18,8 @@ namespace Nieko.Modules.Navigation
         public void Request()
         {
             _RequestEvent = _EventAggregator.CreateEvent<IStartupNotificationsRequestEvent>();  
-            _EventAggregator.Publish<IStartupNotificationsRequestEvent>(_RequestEvent);    
+            _EventAggregator.Publish<IStartupNotificationsRequestEvent>(_RequestEvent);
+            _EventAggregator.Publish<IStartupNotificationsProcessedEvent>();
         }
 
         public StartupNotifier(IInfrastructureEventAggregator eventAggregator, IViewNavigator regionNavigator)
@@ -32,7 +33,7 @@ namespace Nieko.Modules.Navigation
             if (_RequestEvent.CriticalNotifications.Count != 0)
             {
                 ShowNotification(_RequestEvent.CriticalNotifications.Dequeue());
-                System.Windows.Application.Current.Shutdown();
+                Environment.Exit(0);
             }
 
             foreach (var notification in _RequestEvent.NonCriticalNotifications)

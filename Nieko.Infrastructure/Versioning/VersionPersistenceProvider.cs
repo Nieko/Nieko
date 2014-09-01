@@ -9,7 +9,7 @@ using Nieko.Infrastructure.Data;
 namespace Nieko.Infrastructure.Versioning
 {
     /// <summary>
-    /// <seealso cref="IVersionPersistenceProvider"/> implementation backed by a Data Store
+    /// <see cref="IVersionPersistenceProvider"/> implementation backed by a Data Store
     /// </summary>
     /// <typeparam name="TDataStore">Data store for versioning details</typeparam>
     /// <typeparam name="TVersion">Entity for version data</typeparam>

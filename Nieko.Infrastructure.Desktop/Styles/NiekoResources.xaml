@@ -7,23 +7,23 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:presentationUI="clr-namespace:System.Windows.Documents;assembly=PresentationUI"
     xmlns:documents="clr-namespace:System.Windows.Documents;assembly=PresentationFramework"
-    xmlns:Nieko="clr-namespace:Nieko.Infrastructure.Windows;assembly=Nieko.Infrastructure.Desktop"
+    xmlns:Nieko="clr-namespace:Nieko.Infrastructure.Windows"
     mc:Ignorable="d">
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="ColumnBox.xaml"/>
         <ResourceDictionary Source="WPFToolkit.xaml"/>
         <ResourceDictionary Source="MemberList.xaml"/>
         <ResourceDictionary Source="FormsSuiteControl.xaml"/>
+        <ResourceDictionary Source="DefaultStyle.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
     <Nieko:NullDisabledConverter x:Key="nullabled"/>
-    <Nieko:NullVisibilityConverter x:Key="nullverter"/>
-    <Nieko:BoolVisibilityConverter x:Key="boolverter"/>
+    <Nieko:BoolVisibilityConverter x:Key="boolvisverter"/>
     
     <BitmapImage x:Key="imageAdd" UriSource="../Images/add.png"/>
     <BitmapImage x:Key="imageNavFirst" UriSource="../Images/control_start_blue.png"/>
     <BitmapImage x:Key="imageNavPrevious" UriSource="../Images/control_rewind_blue.png"/>
     <BitmapImage x:Key="imageNavNext" UriSource="../Images/control_fastforward_blue.png"/>
     <BitmapImage x:Key="imageNavLast" UriSource="../Images/control_end_blue.png"/>
+    <BitmapImage x:Key="imageFilter" UriSource="../Images/funnel.png"/>
 
 </ResourceDictionary>

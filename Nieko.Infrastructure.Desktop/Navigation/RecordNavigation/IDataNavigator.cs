@@ -41,7 +41,7 @@ namespace Nieko.Infrastructure.Navigation.RecordNavigation
         /// <summary>
         /// Tier owner
         /// </summary>
-        IDataNavigatorOwner Owner { get; set; }
+        ITierCoordinator Owner { get; set; }
         /// <summary>
         /// Current edit state
         /// </summary>
@@ -64,13 +64,8 @@ namespace Nieko.Infrastructure.Navigation.RecordNavigation
         /// <param name="state">Edit action to perform</param>
         void EnterState(EditState state);
         /// <summary>
-        /// Finds the first item of type <typeparamref name="T"/> that
-        /// satisfies the filter condition
+        /// Searching and filtering provider
         /// </summary>
-        /// <typeparam name="T">Type of item to search for</typeparam>
-        /// <param name="filter">Search filter</param>
-        /// <returns></returns>
-        bool Find<T>(Func<T, bool> filter)
-            where T : class;
+        IRecordSearch RecordSearch { get; set; }
     }
 }
